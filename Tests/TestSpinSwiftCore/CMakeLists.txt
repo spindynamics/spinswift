@@ -1,0 +1,5 @@
+add_executable(TestSpinSwiftCore TestSpinSwiftCore.swift)
+
+target_link_libraries(TestSpinSwiftCore PRIVATE SpinSwiftCore)
+
+add_test(NAME TestSpinSwiftCore COMMAND TestSpinSwiftCore)
