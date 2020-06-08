@@ -35,24 +35,24 @@
 //  Created by Pascal Thibaudeau on 24/06/2019.
 */
 
-public class Neighbors : Geometry {
+public class Neighbors {
 
-    var n = [[Int]]()
-
-    public init(radius : Double) {
-        super.init()
+    public var list = [[Int]]()
+    public var radius = 1.0
+    
+    public init(geometry: Geometry, radius : Double) {
+        self.list = createNeighbors(geometry: geometry, radius : radius)
         self.radius = radius
-        self.n = Neighbors(radius : radius)
     }
 
-    func Neighbors(radius: Double) -> [[Int]] {
+    func createNeighbors(geometry: Geometry, radius: Double) -> [[Int]] {
 
         var matrix : [[Int]] = []
 
-        for (index1,_) in r.enumerated(){
+        for (index1,_) in geometry.r.enumerated(){
          matrix.append([])
          for index2 in 0...index1 {
-            if ((Distance(atom1: index1, atom2: index2) <= radius) && Distance(atom1: index1, atom2: index2) != 0) {
+            if ((geometry.Distance(atom1: index1, atom2: index2) <= radius) && geometry.Distance(atom1: index1, atom2: index2) != 0) {
              matrix[index1].append(index2)
              matrix[index2].append(index1)
             }

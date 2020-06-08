@@ -45,8 +45,8 @@ public class Hamiltonian {
   let γ=PrecessionConstants().γ.value
 
   var Zeeman   = (computed : false, B: Vector3())
-  var exchange = (computed : false, J: Double(), radius: Double())
-  var dmi      = (computed : false, D: Double(), radius: Double())
+  var exchange = (computed : false, J: Double(), n: [[Int]]())
+  var dmi      = (computed : false, D: Double(), n: [[Int]]())
   var damping  = (computed : false, alpha: Double())
   var uniaxial = (computed : false, value: Double(), axis: Vector3())
 
@@ -55,7 +55,7 @@ public class Hamiltonian {
     geometry = fromGeometry 
   }
 
-  public func Print(){
+  public func printProperties(){
     for (index,_) in atoms.enumerated() {
       print("r[\(index)]=<\(geometry.r[index].x),\(geometry.r[index].y),\(geometry.r[index].z)>")
       print("ω[\(index)]=<\(atoms[index].ω.x),\(atoms[index].ω.y),\(atoms[index].ω.z)>")
@@ -72,25 +72,23 @@ public class Hamiltonian {
     Zeeman.B = value
   }
 
-  public func exchangeField (value: Double, radius: Double){
+  public func exchangeField (value: Double, n: [[Int]]){
     let coef = (value/ℏ)
 
-    let p = Neighbors(radius: radius).n
-
     for (index1,_) in atoms.enumerated() {
-      for (index2,_) in p[index1].enumerated() {
+      for (index2,_) in n[index1].enumerated() {
         atoms[index1].ω += coef*(atoms[index2].spin)
       }
     }
     exchange.computed = true
     exchange.J = value
-    exchange.radius = radius
+    exchange.n = n
   }
 
-  public func dmiField (value: Double, neighbors: [[Int]]){
+  public func dmiField (value: Double, n: [[Int]]){
     let coef = (value/ℏ)
     for (index1,_) in atoms.enumerated() {
-      for (index2,_) in neighbors[index1].enumerated() {
+      for (index2,_) in n[index1].enumerated() {
         let d=geometry.Distance(atom1:index1, atom2: index2)
         let rij = (1.0/d)*(geometry.r[index1] - geometry.r[index2])
         atoms[index1].ω += coef*(rij × (atoms[index2].spin))
@@ -98,6 +96,7 @@ public class Hamiltonian {
     }
     dmi.computed = true
     dmi.D = value
+    dmi.n = n
   }
 
   public func damping (value: Double){
@@ -178,7 +177,9 @@ public class Hamiltonian {
     for a in atoms {a.ω=Vector3()} //erase the effective fields
     
     if (Zeeman.computed) {self.externalDCField(value: Zeeman.B)}
-    if (uniaxial.computed) {self.uniaxialAnisotropyField(value: uniaxial.value, axis:uniaxial.axis)}
+    if (uniaxial.computed) {self.uniaxialAnisotropyField(value: uniaxial.value, axis: uniaxial.axis)}
+    if (exchange.computed) {self.exchangeField(value: exchange.J, n: exchange.n)}
+    if (dmi.computed) {self.dmiField(value: dmi.D, n: dmi.n)}
     if (damping.computed) {self.damping(value: damping.alpha)}
   }
 }

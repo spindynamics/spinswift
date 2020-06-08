@@ -39,7 +39,6 @@ public class Geometry {
   public var r = [Vector3]()
   var cell = [1,1,1]
   var pbc = [false,false,false]
-  var radius = 1.0
   
   public init(){}
 

@@ -38,15 +38,16 @@
 import SpinSwiftCore
 
 // setup mesh and material constants
-let n   = [1, 1, 1]  // grid
+let n   = [2, 2, 2]  // grid
 let J   = 0.0 // eV exchange
 let α   = 0.25 // Gilbert Damping
 let κ   = 1.0 // eV anisotropy constant
 
 let region = Region(p1:Vector3(), p2:Vector3(1,1,1))
 let g = Geometry(region: region, cell: n, pbc:[true,true,true])
+let N1 = Neighbors(geometry: g, radius:0.5)
 
-//print(g.Neighbors(radius:0.5))
+print(N1.list)
 
 var a: [Atom] = Array(repeating: 0, count: g.r.count).map { _ in return Atom(spin:Vector3(direction:"random",normalize:true), name:"Cobalt", type: 1)}
 
@@ -54,9 +55,8 @@ var h=Hamiltonian(fromAtoms: a, fromGeometry: g)
 
 h.externalDCField(value: Vector3(x:10))
 h.uniaxialAnisotropyField(value: κ, axis: Vector3(y:1))
-//h.exchangeField(value: J, neighbors: g.Neighbors(radius:0.5))
+h.exchangeField(value: J, n: N1.list)
 h.damping(value: α)
 
-h.evolve(stop:10.0, timestep:0.1, method:"symplectic", file:"toto")
+h.evolve(stop:10.0, timestep:0.1, method:"symplectic", file:"test")
 
-//a[0].write(url: "https://github.com/toto.json")
