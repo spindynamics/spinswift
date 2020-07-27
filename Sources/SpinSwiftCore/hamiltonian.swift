@@ -146,10 +146,12 @@ public class Hamiltonian {
     var content=String()
 
     while (currentTime < stop) {
+      content += String(currentTime)
       for a in atoms {
-        content += String(currentTime)+" "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)+"\n"
+        content += " "+String(currentTime)+" "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)+"\n"
         a.advance(method: "euler", Δt: timestep)
       }
+      content += "\n"
       self.update()
       currentTime+=timestep
     }
@@ -162,15 +164,17 @@ public class Hamiltonian {
     var content=String()
 
     while (currentTime < stop) {
+      content += String(currentTime)
       for a in atoms {
-        content += String(currentTime)+" "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)+"\n"
+        content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
         a.advance(method: "symplectic", Δt: timestep)
       }
+      content += "\n"
       self.update()
       currentTime+=timestep
     }
     
-    saveOnFile(data:content, fileName: fileName)
+    saveOnFile(data: content, fileName: fileName)
   }
 
   func update(){

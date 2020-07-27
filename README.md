@@ -18,7 +18,7 @@ You have to use the new Swift support in [CMake](https://cmake.org) to build Spi
 if `swiftc` is not in your path, you will need to add `-DCMAKE_Swift_COMPILER=` with the path to swiftc.
 
 ```sh
-cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=YES
+cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=YES -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
 cd build
 ninja
 ninja test
