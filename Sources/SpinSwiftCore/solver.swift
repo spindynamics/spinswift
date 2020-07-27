@@ -35,6 +35,6 @@
 //  Created by Pascal Thibaudeau on 24/03/2017.
 */
 
-struct Solver {
+class Solver: Atom {
     init(){}
 }

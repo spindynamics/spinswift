@@ -142,7 +142,7 @@ public class Hamiltonian {
   }
 
   public func evolveEuler (stop: Double, timestep: Double, fileName: String){
-    var currentTime = 0.0
+    var currentTime: Double = 0.0
     var content=String()
 
     while (currentTime < stop) {
@@ -158,7 +158,7 @@ public class Hamiltonian {
   }
 
   public func evolveSymplectic (stop: Double, timestep: Double, fileName: String){
-    var currentTime = 0.0
+    var currentTime: Double = 0.0
     var content=String()
 
     while (currentTime < stop) {

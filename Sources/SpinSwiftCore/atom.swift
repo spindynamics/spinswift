@@ -68,6 +68,7 @@ public class Atom {
         s1 += Δt*(ω × spin)
         s = c2*(spin + s1)
         spin = s
+        spin.Normalize()
         default: break
         }
     }
