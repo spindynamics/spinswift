@@ -35,6 +35,5 @@
 //  Created by Pascal Thibaudeau on 24/03/2017.
 */
 
-class Solver: Atom {
-    init(){}
+class Solver: Hamiltonian {
 }
