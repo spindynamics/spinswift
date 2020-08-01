@@ -1,6 +1,6 @@
 # SpinSwift
 SpinSwift is an open source software simulation package for the simulation of magnetic materials.
-The aim of SpinSwift is to provide an atomistic code written in [swift](https://swift.org). 
+The aim of SpinSwift is to provide an atomistic code written in [swift](https://swift.org)>=5. 
 The presented code is an interesting starting point for the development of novel algorithms.
 
 ## Getting SpinSwift
