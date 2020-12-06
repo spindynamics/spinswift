@@ -1,4 +1,7 @@
 {
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "terminal.integrated.shellArgs.linux": [
+        "-l"
+    ]
 }
