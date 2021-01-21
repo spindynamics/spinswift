@@ -135,6 +135,8 @@ public class Hamiltonian {
     switch method?.lowercased(){
       case "euler"? :
       self.evolveEuler(stop: stop, timestep: timestep, fileName: file)
+      case "expls"? :
+      self.evolveExpLs(stop: stop, timestep: timestep, fileName: file)
       case "symplectic"? :
       self.evolveSymplectic(stop: stop, timestep: timestep, fileName: file)
       default: break
@@ -148,7 +150,7 @@ public class Hamiltonian {
     while (currentTime < stop) {
       content += String(currentTime)
       for a in atoms {
-        content += " "+String(currentTime)+" "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)+"\n"
+        content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
         a.advance(method: "euler", Δt: timestep)
       }
       content += "\n"
@@ -157,6 +159,34 @@ public class Hamiltonian {
     }
     //let home = FileManager.default.homeDirectoryForCurrentUser
     saveOnFile(data:content, fileName: fileName)
+  }
+
+  public func evolveExpLs (stop: Double, timestep: Double, fileName: String){
+    var currentTime: Double = 0.0
+    var content=String()
+
+    while (currentTime < stop) {
+      content += String(currentTime)
+
+      for index1 in 0...atoms.count-2 {
+        self.update()
+        atoms[index1].advance(method: "symplectic", Δt: 0.5*timestep)
+      }
+      self.update()
+      atoms[atoms.count-1].advance(method: "symplectic", Δt: timestep)
+      for index1 in stride(from: atoms.count-2, to: 0, by: -1) {
+        self.update()
+        atoms[index1].advance(method: "symplectic", Δt: 0.5*timestep)
+      }
+      for a in atoms {
+        content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
+      }
+
+      content += "\n"
+      currentTime+=timestep
+    }
+    
+    saveOnFile(data: content, fileName: fileName)
   }
 
   public func evolveSymplectic (stop: Double, timestep: Double, fileName: String){

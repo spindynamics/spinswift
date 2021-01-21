@@ -49,7 +49,7 @@ let N1 = Neighbors(geometry: g, radius:0.5)
 
 print(N1.list)
 
-var a: [Atom] = Array(repeating: 0, count: g.r.count).map { _ in return Atom(spin:Vector3(direction:"random",normalize:true), name:"Cobalt", type: 1)}
+var a: [Atom] = Array(repeating: 0, count: g.r.count).map { _ in return Atom(spin:Vector3(direction:"+z",normalize:true), name:"Cobalt", type: 1)}
 
 var h=Hamiltonian(fromAtoms: a, fromGeometry: g)
 
@@ -58,5 +58,5 @@ h.uniaxialAnisotropyField(value: κ, axis: Vector3(y:1))
 h.exchangeField(value: J, n: N1.list)
 h.damping(value: α)
 
-h.evolve(stop:10.0, timestep:0.1, method:"symplectic", file:"test")
+h.evolve(stop:10.0, timestep:0.1, method:"expls", file:"test_expls")
 
