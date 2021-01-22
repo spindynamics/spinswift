@@ -152,6 +152,7 @@ public class Hamiltonian {
       for a in atoms {
         content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
         a.advance(method: "euler", Δt: timestep)
+      //  a.Print()
       }
       content += "\n"
       self.update()
@@ -168,15 +169,15 @@ public class Hamiltonian {
     while (currentTime < stop) {
       content += String(currentTime)
 
-      for index1 in 0...atoms.count-2 {
+      for i in stride(from: 0, to: atoms.count-1, by: 1) {
         self.update()
-        atoms[index1].advance(method: "symplectic", Δt: 0.5*timestep)
+        atoms[i].advance(method: "euler", Δt: 0.5*timestep)
       }
       self.update()
-      atoms[atoms.count-1].advance(method: "symplectic", Δt: timestep)
-      for index1 in stride(from: atoms.count-2, to: 0, by: -1) {
+      atoms[atoms.count-1].advance(method: "euler", Δt: timestep)
+      for i in stride(from: atoms.count-2, to: -1, by: -1) {
         self.update()
-        atoms[index1].advance(method: "symplectic", Δt: 0.5*timestep)
+        atoms[i].advance(method: "euler", Δt: 0.5*timestep)
       }
       for a in atoms {
         content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)

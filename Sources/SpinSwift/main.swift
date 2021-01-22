@@ -39,9 +39,9 @@ import SpinSwiftCore
 
 // setup mesh and material constants
 let n   = [2, 2, 2]  // grid
-let J   = 0.0 // eV exchange
-let α   = 0.25 // Gilbert Damping
-let κ   = 1.0 // eV anisotropy constant
+let J   = 0.1 // eV exchange
+let α   = 0.2 // Gilbert Damping
+let κ   = 0.1 // eV anisotropy constant
 
 let region = Region(p1:Vector3(), p2:Vector3(1,1,1))
 let g = Geometry(region: region, cell: n, pbc:[true,true,true])
@@ -58,5 +58,4 @@ h.uniaxialAnisotropyField(value: κ, axis: Vector3(y:1))
 h.exchangeField(value: J, n: N1.list)
 h.damping(value: α)
 
-h.evolve(stop:10.0, timestep:0.1, method:"expls", file:"test_expls")
-
+h.evolve(stop:10, timestep:0.1, method:"euler", file:"test_euler")
