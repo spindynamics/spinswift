@@ -99,6 +99,10 @@ public class Vector3 {
       }
   }
 
+  func Print() {
+    print("<\(self.x),\(self.y),\(self.z)>")
+  }
+
   public static func + (a: Vector3, b: Vector3) -> Vector3 {
     return Vector3(x: (a.x)+(b.x), y: (a.y)+(b.y), z:(a.z)+(b.z))
   }

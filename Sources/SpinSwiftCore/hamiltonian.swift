@@ -47,7 +47,7 @@ public class Hamiltonian {
   var Zeeman   = (computed : false, B: Vector3())
   var exchange = (computed : false, J: Double(), n: [[Int]]())
   var dmi      = (computed : false, D: Double(), n: [[Int]]())
-  var damping  = (computed : false, alpha: Double())
+  var damping  = (computed : false, α: Double())
   var uniaxial = (computed : false, value: Double(), axis: Vector3())
 
   public init(fromAtoms: [Atom], fromGeometry: Geometry ){
@@ -76,7 +76,7 @@ public class Hamiltonian {
     let coef = (value/ℏ)
 
     for (index1,_) in atoms.enumerated() {
-      for (index2,_) in n[index1].enumerated() {
+      for index2 in n[index1] {
         atoms[index1].ω += coef*(atoms[index2].spin)
       }
     }
@@ -88,7 +88,7 @@ public class Hamiltonian {
   public func dmiField (value: Double, n: [[Int]]){
     let coef = (value/ℏ)
     for (index1,_) in atoms.enumerated() {
-      for (index2,_) in n[index1].enumerated() {
+      for index2 in n[index1] {
         let d=geometry.Distance(atom1:index1, atom2: index2)
         let rij = (1.0/d)*(geometry.r[index1] - geometry.r[index2])
         atoms[index1].ω += coef*(rij × (atoms[index2].spin))
@@ -106,7 +106,7 @@ public class Hamiltonian {
       atoms[index].ω = coef*(a - value*(a × (atoms[index].spin) ))
     }
     damping.computed = true
-    damping.alpha = value
+    damping.α = value
   }
   
   public func uniaxialAnisotropyField (value: Double, axis: Vector3) {
@@ -152,7 +152,6 @@ public class Hamiltonian {
       for a in atoms {
         content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
         a.advance(method: "euler", Δt: timestep)
-      //  a.Print()
       }
       content += "\n"
       self.update()
@@ -169,20 +168,21 @@ public class Hamiltonian {
     while (currentTime < stop) {
       content += String(currentTime)
 
-      for i in stride(from: 0, to: atoms.count-1, by: 1) {
-        self.update()
-        atoms[i].advance(method: "euler", Δt: 0.5*timestep)
-      }
-      self.update()
-      atoms[atoms.count-1].advance(method: "euler", Δt: timestep)
-      for i in stride(from: atoms.count-2, to: -1, by: -1) {
-        self.update()
-        atoms[i].advance(method: "euler", Δt: 0.5*timestep)
-      }
       for a in atoms {
         content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
       }
 
+      for i in stride(from: 0, to: atoms.count-1, by: 1) {
+        update(index: i)
+        atoms[i].advance(method: "symplectic", Δt: 0.5*timestep)
+      }
+      update(index: atoms.count-1)
+      atoms[atoms.count-1].advance(method: "symplectic", Δt: timestep)
+      for i in stride(from: atoms.count-2, to: -1, by: -1) {
+        update(index: i)
+        atoms[i].advance(method: "symplectic", Δt: 0.5*timestep)
+      }
+      
       content += "\n"
       currentTime+=timestep
     }
@@ -209,12 +209,27 @@ public class Hamiltonian {
   }
 
   func update(){
-    for a in atoms {a.ω=Vector3()} //erase the effective fields
+    for a in atoms {a.ω=Vector3(x:0,y:0,z:0)} //erase the effective fields
     
     if (Zeeman.computed) {self.externalDCField(value: Zeeman.B)}
     if (uniaxial.computed) {self.uniaxialAnisotropyField(value: uniaxial.value, axis: uniaxial.axis)}
     if (exchange.computed) {self.exchangeField(value: exchange.J, n: exchange.n)}
     if (dmi.computed) {self.dmiField(value: dmi.D, n: dmi.n)}
-    if (damping.computed) {self.damping(value: damping.alpha)}
+    if (damping.computed) {self.damping(value: damping.α)}
+  }
+
+  func update(index: Int){
+    atoms[index].ω = Vector3(x:0, y:0, z:0)
+    atoms[index].ω += γ*Zeeman.B
+    atoms[index].ω -= (uniaxial.value/ℏ)*(uniaxial.axis°(atoms[index].spin))*(uniaxial.axis)
+    for index2 in exchange.n[index] {
+        atoms[index].ω += (exchange.J/ℏ)*(atoms[index2].spin)
+        let rij = (1.0/geometry.Distance(atom1:index, atom2: index2))*(geometry.r[index] - geometry.r[index2])
+        atoms[index].ω += (dmi.D/ℏ)*(rij × (atoms[index2].spin))
+    }
+    let α = damping.α
+    let coef = 1.0/(1.0+α*α)
+    let a = atoms[index].ω
+    atoms[index].ω = coef*(a - α*(a × (atoms[index].spin)))
   }
 }
