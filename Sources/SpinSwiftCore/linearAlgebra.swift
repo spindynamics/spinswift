@@ -34,13 +34,6 @@
  //
  //  Created by Pascal Thibaudeau on 24/03/2017.
  */
-#if SWIFT_3
-#if os(macOS)
-import Darwin
-#elseif os(Linux)
-import Glibc
-#endif
-#endif
 
 infix operator + : AdditionPrecedence
 infix operator ×
@@ -66,15 +59,9 @@ public class Vector3 {
         case "+z"?: self.x = 0 ; self.y = 0 ; self.z = 1
         case "-z"?: self.x = 0 ; self.y = 0 ; self.z = -1
         case "random"?:
-        #if SWIFT_3
-        self.x=2*(Double(arc4random())/Double(UInt32.max))-1.0
-        self.y=2*(Double(arc4random())/Double(UInt32.max))-1.0
-        self.z=2*(Double(arc4random())/Double(UInt32.max))-1.0
-        #else
         self.x=Double.random(in: -1...1)
         self.y=Double.random(in: -1...1)
         self.z=Double.random(in: -1...1)
-        #endif
         self.Normalize()
         default: break
     } 
