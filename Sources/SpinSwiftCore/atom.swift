@@ -80,14 +80,14 @@ public class Atom {
 
     public func write(url: String){
 #if os(Linux)
-        let fileName = url.lastPathComponent
-        let fileType = fileName.pathExtension
+    let fileName = url.lastPathComponent
+    let fileType = fileName.pathExtension
 #endif
 #if os(macOS)
 	let fileName = (url as NSString).lastPathComponent
-        let fileType = (fileName as NSString).pathExtension
+    let fileType = (fileName as NSString).pathExtension
 #endif
-        switch fileType.lowercased() {
+    switch fileType.lowercased() {
         case "xyz":
         print(fileName)
         case "json":
