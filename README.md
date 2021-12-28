@@ -11,7 +11,7 @@ A comprehensive overview of the software features and example input files have t
 | | **Architecture** | **Master** |
 |---|:---:|:---:|
 | **macOS**        | x86_64 |![SpinSwift](https://github.com/araven/spinswift/workflows/SwiftOnMac/badge.svg)|
-| **Ubuntu 18.04** | x86_64 |![SpinSwift](https://github.com/araven/spinswift/workflows/SwiftOnLinux/badge.svg)|
+| **Ubuntu 20.04** | x86_64 |![SpinSwift](https://github.com/araven/spinswift/workflows/SwiftOnLinux/badge.svg)|
 
 You have to use the new Swift support in [CMake](https://cmake.org) to build SpinSwift using modern CMake techniques with the [ninja](https://ninja-build.org) generator.
 
