@@ -36,11 +36,15 @@
 */
 
 public class Geometry {
-  public var r = [Vector3]()
-  var cell = [1,1,1]
-  var pbc = [false,false,false]
-  
-  public init(){}
+  public var r = [Vector3]() // The position of the lattice nodes
+  var cell = [Int]()         // The lattice parameters
+  var pbc = [Bool]()         // The boundary conditions
+
+  public init(r: [Vector3], cell: [Int], pbc: [Bool]){
+    self.r = r
+    self.cell = cell
+    self.pbc = pbc
+  }
 
   public init(p1: Vector3, p2: Vector3, cell: [Int], pbc: [Bool]){
     let region = Region(p1:p1, p2:p2)
@@ -52,7 +56,11 @@ public class Geometry {
     self.pbc = pbc
     generate(region: region, cell: cell)
   }
-  
+
+  convenience init(){
+    self.init(r:[Vector3](),cell:[1,1,1],pbc:[false,false,false])
+  }
+
   func generate(region: Region, cell: [Int]){
     let p1 = region.p1
     let p2 = region.p2

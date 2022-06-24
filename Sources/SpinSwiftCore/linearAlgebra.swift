@@ -40,9 +40,7 @@ infix operator ×
 infix operator °
 
 public class Vector3 {
-  var x: Double = 0
-  var y: Double = 0
-  var z: Double = 0
+  var x,y,z: Double
 
   public init(x: Double? = 0 , y: Double? = 0, z: Double? = 0, direction: String? = nil, normalize: Bool? = false) {
       self.x=x!
@@ -59,10 +57,10 @@ public class Vector3 {
         case "+z"?: self.x = 0 ; self.y = 0 ; self.z = 1
         case "-z"?: self.x = 0 ; self.y = 0 ; self.z = -1
         case "random"?:
-        self.x=Double.random(in: -1...1)
-        self.y=Double.random(in: -1...1)
-        self.z=Double.random(in: -1...1)
-        self.Normalize()
+          self.x=Double.random(in: -1...1)
+          self.y=Double.random(in: -1...1)
+          self.z=Double.random(in: -1...1)
+          self.Normalize()
         default: break
     } 
   }

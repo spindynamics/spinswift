@@ -38,8 +38,8 @@ import Foundation
 
 public class Hamiltonian {
 
-  public var atoms = [Atom]()
-  public var geometry = Geometry()
+  public var atoms: [Atom]
+  public var geometry: Geometry
 
   let ℏ=PhysicalConstants().ℏ.value
   let γ=PrecessionConstants().γ.value
@@ -50,9 +50,9 @@ public class Hamiltonian {
   var damping  = (computed : false, α: Double())
   var uniaxial = (computed : false, value: Double(), axis: Vector3())
 
-  public init(fromAtoms: [Atom], fromGeometry: Geometry ){
-    atoms = fromAtoms
-    geometry = fromGeometry 
+  public init(atoms: [Atom], geometry: Geometry ){
+    self.atoms = atoms
+    self.geometry = geometry 
   }
 
   public func printProperties(){

@@ -37,15 +37,15 @@
 
 public class Region {
     
-    var p1=Vector3()
-    var p2=Vector3(1,1,1)
-    var volume=1.0
+    var p1, p2: Vector3
 
     public init(p1: Vector3, p2: Vector3){
         self.p1 = p1
         self.p2 = p2
+    }
 
-        volume=self.Volume()
+    convenience init(){
+        self.init(p1: Vector3(0,0,0), p2: Vector3(1,1,1))
     }
 
     public func Volume()-> Double {
@@ -53,6 +53,5 @@ public class Region {
         guard  v != 0 else {fatalError("Volume is zero")}
         return v
     }
-
 
 }

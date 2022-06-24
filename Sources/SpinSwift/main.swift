@@ -51,7 +51,7 @@ print(N1.list)
 
 var a: [Atom] = Array(repeating: 0, count: g.r.count).map { _ in return Atom(spin:Vector3(direction:"+z",normalize:true), name:"Cobalt", type: 1)}
 
-var h=Hamiltonian(fromAtoms: a, fromGeometry: g)
+var h=Hamiltonian(atoms: a, geometry: g)
 
 h.externalDCField(value: Vector3(x:10))
 h.uniaxialAnisotropyField(value: κ, axis: Vector3(y:1))

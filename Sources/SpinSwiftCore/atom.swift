@@ -39,38 +39,38 @@ import Foundation
 
 public class Atom {
     public var spin: Vector3 // the spin direction
-    public var ω = Vector3() // the pulsation around the spin spins
+    public var ω: Vector3 // the pulsation around the spin spins
     public var name: String // the name of this atom
     public var type: Int // the type of this atom
 
-    public init(spin: Vector3? = nil, name: String? = nil, type: Int? = 0){
-        self.spin=spin!
-        self.name=name!
+    public init(spin: Vector3, ω: Vector3? = Vector3(), name: String, type: Int? = 0){
+        self.spin=spin
+        self.ω=ω!
+        self.name=name
         self.type=type!
     }
 
     convenience init(){
-        self.init(spin: Vector3(), name: "Unamed", type: 0)
+        self.init(spin: Vector3(), ω: Vector3(), name: "Unnamed", type: 0)
     }
 
     public func advance(method: String, Δt: Double){
         var s = Vector3()
         switch method.lowercased() {
         case "euler" :
-        s = spin + Δt * (ω × spin)
-        spin = s
-        spin.Normalize()
+            s = spin + Δt * (ω × spin)
         case "symplectic" :
-        let c = (0.25*Δt*Δt)
-        let c2 = 1.0/((1.0 + c*(ω°ω)))
-        var s1 = Vector3()
-        s1 = c*((2.0*(ω°spin))*ω - (ω°ω)*spin)
-        s1 += Δt*(ω × spin)
-        s = c2*(spin + s1)
-        spin = s
-        spin.Normalize()
+            let ω2 = (ω°ω)
+            let c = (0.25*Δt*Δt)
+            let c2 = 1.0/((1.0 + c*ω2))
+            var s1 = Vector3()
+            s1 = c*((2.0*(ω°spin))*ω - ω2*spin)
+            s1 += Δt * (ω × spin)
+            s = c2 * (spin + s1)
         default: break
         }
+        spin = s
+        spin.Normalize()
     }
 
     public func Print(){
