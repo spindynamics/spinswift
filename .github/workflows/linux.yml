@@ -28,7 +28,7 @@ jobs:
     - name: locate swift
       uses: swift-actions/setup-swift@v1
       with:
-        swift-version: '5.6.2' # This value is passed to swiftenv without modification.
+        swift-version: '5.6' # This value is passed to swiftenv without modification.
 
     - name: Configure cmake
       run: |
