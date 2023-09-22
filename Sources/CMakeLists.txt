@@ -1,2 +1,0 @@
-add_subdirectory(SpinSwiftCore)
-add_subdirectory(SpinSwift)

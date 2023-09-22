@@ -35,11 +35,13 @@
  //  Created by Pascal Thibaudeau on 24/03/2017.
  */
 
+import Foundation
+
 infix operator + : AdditionPrecedence
 infix operator ×
 infix operator °
 
-public class Vector3 {
+public class Vector3 : Codable {
   var x,y,z: Double
 
   public init(x: Double? = 0 , y: Double? = 0, z: Double? = 0, direction: String? = nil, normalize: Bool? = false) {
@@ -97,13 +99,13 @@ public class Vector3 {
   }
 
   public static func += (a: inout Vector3, b: Vector3) {
-    var c = Vector3()
+    var c: Vector3 = Vector3()
     c = a + b
     a = c
   }
 
   public static func -= (a: inout Vector3, b: Vector3) {
-    var c = Vector3()
+    var c: Vector3 = Vector3()
     c = a - b
     a = c
   }
@@ -119,4 +121,10 @@ public class Vector3 {
   public static func * (a: Double, b: Vector3) -> Vector3 {
     return Vector3(x: a*(b.x), y: a*(b.y), z: a*(b.z))
   }
+
+  public func jsonify() throws -> String {
+        let data = try JSONEncoder().encode(self)
+        let jsonString = String(data:data, encoding:.utf8) 
+        return jsonString!
+    } 
 }
