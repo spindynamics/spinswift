@@ -2,6 +2,11 @@
 
 No need to install a swift compiler. Simply cp .bash_aliases in your $HOME and install podman/docker
 
+* Run the tests
+```swift
+swift test
+```
+
 * Build the sources
 ```swift
 swift build
