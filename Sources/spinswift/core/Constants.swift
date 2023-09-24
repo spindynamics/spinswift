@@ -1,7 +1,5 @@
 /*
-This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this licen
-se, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 9
-4042, USA.
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 */
 import Foundation
 
@@ -12,7 +10,7 @@ import Foundation
 /// - Version: 0.1
 
 // a very small number
-public let ε: Double   = 1e-18
+public let ε: Double = 1e-18
 
 public struct PhysicalConstants : Codable {
   public let value : Double
@@ -31,7 +29,7 @@ public struct PhysicalConstants : Codable {
         return jsonString!
   } 
 }
-
+/// The elementary charge; e=1.602176634e-19 C
 public let elementary_charge: PhysicalConstants = PhysicalConstants(value: 1.602176634e-19, description: "The elementary charge", units: "[A s]")
 public let μ_B: PhysicalConstants = PhysicalConstants(value: 0.057883817555, description: "The Bohr Magneton", units: "[meV/T]")
 public let μ_0: PhysicalConstants = PhysicalConstants(value: 2.0133545*1e-28, description: "The vacuum permeability", units: "[T^2 m^3 / meV]")

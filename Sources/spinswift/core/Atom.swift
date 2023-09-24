@@ -1,7 +1,5 @@
 /*
-This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this licen
-se, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 9
-4042, USA.
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 */
 import Foundation
 
@@ -18,9 +16,9 @@ class Atom : Codable {
     var type : Int
     /// An atomic Landé factor in Bohr's magneton unit   
     var g : Double  
-    /// An atomic cartesian position 
+    /// An atomic Cartesian position 
     var position : Vector3 
-    /// An atomic cartesian spin direction
+    /// An atomic Cartesian spin direction
     var spin : Vector3 
     /// An atomic pulsation vector around its spin spins
     var ω: Vector3 
@@ -31,7 +29,7 @@ class Atom : Codable {
         - Parameters:
             - name: The name of the atom
             - type: The type of the atom
-            - position: The cartesian position of the atom
+            - position: The Cartesian position of the atom
             - spin: The spin direction of the atom as a unit vector
             - ω: The pulsation vector located on the atom
             - g: The Landé factor of the atom in Bohr's magneton unit
@@ -56,7 +54,7 @@ class Atom : Codable {
           - method: The type of method used either [euler](euler) or [symplectic](symplectic)
           - Δt: The timestep used.
 
-        - Returns: The cartesian vector pointing the new direction and located on the unit sphere
+        - Returns: The Cartesian vector pointing the new direction and located on the unit sphere
     */
     func advanceSpin(method: String, Δt: Double){
         var s: Vector3 = Vector3()
