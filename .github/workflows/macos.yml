@@ -2,9 +2,15 @@ name: SwiftOnMac
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ main ]
   pull_request:
     branches: [ main ]
+=======
+    branches: [ v2 ]
+  pull_request:
+    branches: [ v2 ]
+>>>>>>> v2
 
 jobs:
   build:
@@ -12,18 +18,8 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Cache ninja
-      id: cache-ninja
-      uses: actions/cache@v1
-      with:
-        path: "~/ninja"
-        key: ${{ runner.os }}-ninja
-
-    - name: Prepare
-      run: |
-        brew install ninja
-        cmake -G Ninja -B build
-    - name: Build
-      run:  cd build; ninja
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test

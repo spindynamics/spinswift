@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "name": "Debug spinswift",
+            "program": "${workspaceFolder:spinswift}/.build/debug/spinswift",
+            "args": [],
+            "cwd": "${workspaceFolder:spinswift}",
+            "preLaunchTask": "swift: Build Debug spinswift"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "name": "Release spinswift",
+            "program": "${workspaceFolder:spinswift}/.build/release/spinswift",
+            "args": [],
+            "cwd": "${workspaceFolder:spinswift}",
+            "preLaunchTask": "swift: Build Release spinswift"
+        }
+    ]
+}

@@ -3,5 +3,10 @@
     "cmake.configureOnOpen": true,
     "terminal.integrated.shellArgs.linux": [
         "-l"
+    ],
+    "cSpell.words": [
+        "CNRS",
+        "Spinswift",
+        "Thibaudeau"
     ]
 }
