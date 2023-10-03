@@ -11,18 +11,18 @@ import Foundation
 /// - Version: 0.1
 class Interaction : Codable {
     
-    var atom :[Atom]
+    var atoms :[Atom]
 
-    init(_ atom: [Atom]? = [Atom]()) {
-        self.atom = atom!
-        atom!.forEach {
+    init(_ atoms: [Atom]? = [Atom]()) {
+        self.atoms = atoms!
+        atoms!.forEach {
             $0.ω = Vector3(0,0,0)
         }
     }
 
     func Dampening(_ value: Double) -> Interaction {
         let coeff: Double = 1.0/(1.0+value*value)
-        atom.forEach {
+        atoms.forEach {
             $0.ω += (value*($0.spin × $0.ω))
             $0.ω = coeff * ($0.ω)
         }
@@ -30,7 +30,8 @@ class Interaction : Codable {
     }
 
     func Demagnetizing(_ nx: Double, _ ny: Double , _ nz: Double) -> Interaction {
-        atom.forEach {
+        assert(nx+ny+nz == 1,"Demagnetizing: the sum of the coefficients should be 1")
+        atoms.forEach {
             $0.ω -= Vector3(nx*($0.spin.x), ny*($0.spin.y), nz*($0.spin.z))
         }
         return self
@@ -41,22 +42,23 @@ class Interaction : Codable {
     }
 
     func Exchange(typeI: Int, typeJ: Int, value: Double, Kaneyoshi : [Double]?=[0,0,1.6], Rcut: Double? = Double()) -> Interaction {
-        for i: Int in 0...atom.count where atom[i].type == typeI {
-           for j: Int in i...atom.count where atom[j].type == typeJ && Distance(atomI: atom[i], atomJ: atom[j])>0 {
+        let NumberOfAtoms = atoms.count
+        for i: Int in 0...NumberOfAtoms where atoms[i].type == typeI {
+           for j: Int in i...NumberOfAtoms where atoms[j].type == typeJ && Distance(atomI: atoms[i], atomJ: atoms[j])>0 {
            }
         }
         return self
     }
 
     func Uniaxial(_ axis: Vector3, value:Double) -> Interaction {
-        atom.forEach {
+        atoms.forEach {
             $0.ω += (value*($0.spin°axis)*axis)
         }
         return self
     }
     
     func Zeeman(_ axis: Vector3, value: Double) -> Interaction {
-        atom.forEach {
+        atoms.forEach {
             $0.ω += (value*axis)
         }
         return self

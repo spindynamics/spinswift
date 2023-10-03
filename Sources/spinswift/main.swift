@@ -28,4 +28,3 @@ var h:Interaction = Interaction([MTJ[0],MTJ[2]])
 .Dampening(0.1)
 
 print(try! h.jsonify())
-
