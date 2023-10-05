@@ -37,14 +37,12 @@ class Interaction : Codable {
         return self
     }
 
-    func Distance(atomI: Atom, atomJ: Atom) -> Double {
-        return sqrt((atomI.position - atomJ.position)°(atomI.position - atomJ.position)) 
-    }
-
-    func Exchange(typeI: Int, typeJ: Int, value: Double, Kaneyoshi : [Double]?=[0,0,1.6], Rcut: Double? = Double()) -> Interaction {
+    func Exchange(typeI: Int, typeJ: Int, value: Double, Rcut: Double? = Double()) -> Interaction {
         let NumberOfAtoms = atoms.count
-        for i: Int in 0...NumberOfAtoms where atoms[i].type == typeI {
-           for j: Int in i...NumberOfAtoms where atoms[j].type == typeJ && Distance(atomI: atoms[i], atomJ: atoms[j])>0 {
+        for i: Int in 0...NumberOfAtoms-1 where atoms[i].type == typeI {
+           for j: Int in 0...i where atoms[j].type == typeJ && Distance(atoms[i].position, atoms[j].position)<=Rcut! && Distance(atoms[i].position, atoms[j].position)>0 {
+            atoms[i].ω += value*atoms[j].spin
+            atoms[j].ω = atoms[i].ω
            }
         }
         return self

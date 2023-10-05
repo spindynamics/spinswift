@@ -8,7 +8,7 @@ import Foundation
 /// - Author: Pascal Thibaudeau
 /// - Date: 14/04/2023
 /// - Version: 0.1
-infix operator + : AdditionPrecedence
+//infix operator + : AdditionPrecedence
 infix operator ×
 infix operator °
 
@@ -98,6 +98,11 @@ public class Vector3 : Codable {
     return Vector3(x: a*(b.x), y: a*(b.y), z: a*(b.z))
   }
 
+  /// Implementation of Equatable Vector3
+  public static func == (a: Vector3, b: Vector3) -> Bool {
+    return (a.x == b.x) && (a.y == b.y) && (a.z == b.z)
+  }
+
   /// A function to print data in a json format
   public func jsonify() throws -> String {
         let data = try JSONEncoder().encode(self)
@@ -105,3 +110,8 @@ public class Vector3 : Codable {
         return jsonString!
     } 
 }
+
+/// Compute the Euclidean distance between two 3D vectors
+  func Distance(_ a: Vector3, _ b: Vector3) -> Double {
+    return ((a-b)°(a-b)).squareRoot()
+  }
