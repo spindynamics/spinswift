@@ -38,7 +38,7 @@ class Interaction : Codable {
     }
 
     func Exchange(typeI: Int, typeJ: Int, value: Double, Rcut: Double? = Double()) -> Interaction {
-        let NumberOfAtoms = atoms.count
+        let NumberOfAtoms: Int = atoms.count
         for i: Int in 0...NumberOfAtoms-1 where atoms[i].type == typeI {
            for j: Int in 0...i where atoms[j].type == typeJ && Distance(atoms[i].position, atoms[j].position)<=Rcut! && Distance(atoms[i].position, atoms[j].position)>0 {
             atoms[i].ω += value*atoms[j].spin

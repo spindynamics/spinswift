@@ -21,12 +21,12 @@ class integrate {
     }
 
     func expLs(h: Interaction, method: String, Δt: Double) {
-        let NumberOfAtoms = atoms.count
-        for i in 0...(NumberOfAtoms-2) {
+        let NumberOfAtoms: Int = atoms.count
+        for i:Int in 0...(NumberOfAtoms-2) {
             atoms[i].advanceSpin(method: method, Δt: Δt/2)
         }
         atoms[NumberOfAtoms-1].advanceSpin(method: method, Δt: Δt)
-        for i in 0...(NumberOfAtoms-2) {
+        for i: Int in 0...(NumberOfAtoms-2) {
             atoms[NumberOfAtoms-i-2].advanceSpin(method: method, Δt: Δt/2)
         }
     }

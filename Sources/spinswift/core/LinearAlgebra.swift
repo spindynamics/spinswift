@@ -51,7 +51,7 @@ public class Vector3 : Codable {
 
   // Normalize all the components of a 3D vector
   func Normalize() {
-      let norm = self.Norm()
+      let norm: Double = self.Norm()
       if norm != 0 {
       x/=norm
       y/=norm
@@ -105,8 +105,8 @@ public class Vector3 : Codable {
 
   /// A function to print data in a json format
   public func jsonify() throws -> String {
-        let data = try JSONEncoder().encode(self)
-        let jsonString = String(data:data, encoding:.utf8) 
+        let data: Data = try JSONEncoder().encode(self)
+        let jsonString: String? = String(data:data, encoding:.utf8) 
         return jsonString!
     } 
 }
