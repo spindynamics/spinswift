@@ -22,10 +22,22 @@ MTJ.append(Magnetization(name: "Fe", type: 1, position: Vector3(0,0,0), spin: Ve
 MTJ.append(Magnetization(name: "O", type: 2, position: Vector3(0,0,1), spin: Vector3(0,0,0), g:0))
 MTJ.append(Magnetization(name: "Fe", type: 1, position: Vector3(0,0,2), spin: Vector3(direction:"+x"), g:2))
 
+/*
 var h:Interaction = Interaction([MTJ[0],MTJ[2]])
 .Zeeman(Vector3(direction:"+z"), value:0.1)
 .Uniaxial(Vector3(direction:"+x"), value: 1)
 .Exchange(typeI:1,typeJ:1,value:1.0,Rcut:3)
 .Dampening(0.1)
+*/
+var h: Interaction = Interaction()
+.Zeeman(Vector3(direction:"+z"), value: 0.1)
+.Uniaxial(Vector3(direction:"+x"), value: 1)
+//.Exchange(typeI:1,typeJ:1,value:1.0,Rcut:3)
+.Dampening(0.1)
+
+h.atoms.append(MTJ[0])
+h.atoms.append(MTJ[1])
+h.atoms.append(MTJ[2])
 
 print(try! h.jsonify())
+

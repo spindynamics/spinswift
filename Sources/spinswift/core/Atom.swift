@@ -75,6 +75,10 @@ class Atom : Codable {
         spin.Normalize()
     }
 
+    func Zeeman(_ axis: Vector3, value: Double) {
+            ω += (value*axis)
+    }
+    
     func jsonify() throws -> String {
         let data: Data = try JSONEncoder().encode(self)
         let jsonString: String? = String(data:data, encoding:.utf8) 

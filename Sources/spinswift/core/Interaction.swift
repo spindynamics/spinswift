@@ -11,11 +11,18 @@ import Foundation
 /// - Version: 0.1
 class Interaction : Codable {
     
-    var atoms :[Atom]
+    var atoms :[Atom] = [Atom]()
 
-    init(_ atoms: [Atom]? = [Atom]()) {
+    /* init(_ atoms: [Atom]? = [Atom]()) {
         self.atoms = atoms!
         atoms!.forEach {
+            $0.ω = Vector3(0,0,0)
+        }
+    }
+    */
+
+    init (){
+        atoms.forEach {
             $0.ω = Vector3(0,0,0)
         }
     }
