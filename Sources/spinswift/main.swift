@@ -30,3 +30,5 @@ var h: Interaction = Interaction([MTJ[0],MTJ[2]])
 .Dampening(0.0)
 
 print(try! h.jsonify())
+h.Update()
+print(try! h.jsonify())

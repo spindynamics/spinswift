@@ -15,7 +15,8 @@ class Interaction : Codable {
 
     private struct Zeeman : Codable {
         var computed: Bool = false
-        var B: Vector3 = Vector3()
+        var axis: Vector3 = Vector3()
+        var value: Double = Double()
     }
     private struct Exchange : Codable {
         /// true or false if the exchange is computed
@@ -37,8 +38,8 @@ class Interaction : Codable {
     private struct Uniaxial : Codable {
         /// true or false if the uniaxial anisotropy field is computed
         var computed: Bool = false
-        var value: Double = Double()
         var axis: Vector3 = Vector3()
+        var value: Double = Double()
     }
     private struct Demagnetizing : Codable {
         /// true or false if the uniform demagnetizing field is computed
@@ -46,6 +47,13 @@ class Interaction : Codable {
         /// 3 values such as n[1]+n[2]+n[3]=1
         var n:[Double] = [Double]()
     }
+
+    private var isZeeman : Zeeman = Zeeman()
+    private var isExchange : Exchange = Exchange()
+    private var isDMI : DMI = DMI()
+    private var isDamping : Damping = Damping()
+    private var isUniaxial : Uniaxial = Uniaxial()
+    private var isDemagnetizing : Demagnetizing = Demagnetizing()
 
     init(_ atoms: [Atom]? = [Atom]()) {
         self.atoms = atoms!
@@ -60,7 +68,7 @@ class Interaction : Codable {
             $0.ω += (value*($0.spin × $0.ω))
             $0.ω = coeff * ($0.ω)
         }
-        var _ = Interaction.Damping(computed:true,α:value)
+        self.isDamping = Interaction.Damping(computed:true,α:value)
         return self
     }
 
@@ -69,7 +77,7 @@ class Interaction : Codable {
         atoms.forEach {
             $0.ω -= Vector3(nx*($0.spin.x), ny*($0.spin.y), nz*($0.spin.z))
         }
-        var _ = Interaction.Demagnetizing(computed: true, n: [nx,ny,nz])
+        self.isDemagnetizing = Interaction.Demagnetizing(computed: true, n: [nx,ny,nz])
         return self
     }
 
@@ -89,7 +97,7 @@ class Interaction : Codable {
         atoms.forEach {
             $0.ω += coeff*($0.spin°axis)*axis
         }
-        var _ = Interaction.Uniaxial(computed: true, value: coeff, axis: axis)
+        self.isUniaxial = Interaction.Uniaxial(computed: true, axis: axis, value: value)
         return self
     }
     
@@ -98,8 +106,16 @@ class Interaction : Codable {
         atoms.forEach {
             $0.ω += coeff*axis
         }
-        var _ = Interaction.Zeeman(computed: true, B: coeff*axis)
+        self.isZeeman = Interaction.Zeeman(computed: true, axis: axis, value: value)
         return self
+    }
+
+    func Update(){
+        //erase the effective fields
+        atoms.forEach {$0.ω = Vector3(0,0,0)}
+        if (isZeeman.computed) {self.ZeemanField(isZeeman.axis,value:isZeeman.value)}
+        if (isUniaxial.computed) {self.UniaxialField(isUniaxial.axis,value:isUniaxial.value)}
+        if (isDamping.computed) {self.Dampening(isDamping.α)}
     }
 
     func jsonify() throws -> String {
