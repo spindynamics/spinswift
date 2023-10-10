@@ -3,7 +3,7 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
 */
 import Foundation
 
-/// A class for managing interactions between atoms
+/// A class for managing interactions between the atoms
 /// 
 /// Interactions act between atoms. 
 /// - Author: Pascal Thibaudeau
@@ -11,18 +11,45 @@ import Foundation
 /// - Version: 0.1
 class Interaction : Codable {
     
-    var atoms :[Atom] = [Atom]()
+    public var atoms: [Atom]
 
-    /* init(_ atoms: [Atom]? = [Atom]()) {
+    private struct Zeeman : Codable {
+        var computed: Bool = false
+        var B: Vector3 = Vector3()
+    }
+    private struct Exchange : Codable {
+        /// true or false if the exchange is computed
+        var computed: Bool = false
+        var J: Double = Double()
+        var n: [Int] = [Int]()
+    }
+    private struct DMI : Codable {
+        /// true or false if the DMI is computed
+        var computed: Bool = false
+        var D: Double = Double()
+        var n: [Int] = [Int]()
+    }
+    private struct Damping : Codable {
+        /// true or false if the damping is computed
+        var computed: Bool = false
+        var α: Double = Double()
+    }
+    private struct Uniaxial : Codable {
+        /// true or false if the uniaxial anisotropy field is computed
+        var computed: Bool = false
+        var value: Double = Double()
+        var axis: Vector3 = Vector3()
+    }
+    private struct Demagnetizing : Codable {
+        /// true or false if the uniform demagnetizing field is computed
+        var computed: Bool = false
+        /// 3 values such as n[1]+n[2]+n[3]=1
+        var n:[Double] = [Double]()
+    }
+
+    init(_ atoms: [Atom]? = [Atom]()) {
         self.atoms = atoms!
         atoms!.forEach {
-            $0.ω = Vector3(0,0,0)
-        }
-    }
-    */
-
-    init (){
-        atoms.forEach {
             $0.ω = Vector3(0,0,0)
         }
     }
@@ -33,18 +60,20 @@ class Interaction : Codable {
             $0.ω += (value*($0.spin × $0.ω))
             $0.ω = coeff * ($0.ω)
         }
+        var _ = Interaction.Damping(computed:true,α:value)
         return self
     }
 
-    func Demagnetizing(_ nx: Double, _ ny: Double , _ nz: Double) -> Interaction {
+    func DemagnetizingField(_ nx: Double, _ ny: Double , _ nz: Double) -> Interaction {
         assert(nx+ny+nz == 1,"Demagnetizing: the sum of the coefficients should be 1")
         atoms.forEach {
             $0.ω -= Vector3(nx*($0.spin.x), ny*($0.spin.y), nz*($0.spin.z))
         }
+        var _ = Interaction.Demagnetizing(computed: true, n: [nx,ny,nz])
         return self
     }
 
-    func Exchange(typeI: Int, typeJ: Int, value: Double, Rcut: Double? = Double()) -> Interaction {
+    func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double? = Double()) -> Interaction {
         let NumberOfAtoms: Int = atoms.count
         for i: Int in 0...NumberOfAtoms-1 where atoms[i].type == typeI {
            for j: Int in 0...i where atoms[j].type == typeJ && Distance(atoms[i].position, atoms[j].position)<=Rcut! && Distance(atoms[i].position, atoms[j].position)>0 {
@@ -55,17 +84,21 @@ class Interaction : Codable {
         return self
     }
 
-    func Uniaxial(_ axis: Vector3, value:Double) -> Interaction {
+    func UniaxialField(_ axis: Vector3, value: Double) -> Interaction {
+        let coeff = value/(ℏ.value)
         atoms.forEach {
-            $0.ω += (value*($0.spin°axis)*axis)
+            $0.ω += coeff*($0.spin°axis)*axis
         }
+        var _ = Interaction.Uniaxial(computed: true, value: coeff, axis: axis)
         return self
     }
     
-    func Zeeman(_ axis: Vector3, value: Double) -> Interaction {
+    func ZeemanField(_ axis: Vector3, value: Double) -> Interaction {
+        let coeff = (γ.value)*value
         atoms.forEach {
-            $0.ω += (value*axis)
+            $0.ω += coeff*axis
         }
+        var _ = Interaction.Zeeman(computed: true, B: coeff*axis)
         return self
     }
 
