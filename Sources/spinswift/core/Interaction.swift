@@ -111,8 +111,9 @@ class Interaction : Codable {
     }
 
     func Update(){
-        //erase the effective fields
+        //erase the effective fields first
         atoms.forEach {$0.ω = Vector3(0,0,0)}
+        //If the fields have been computed, then update them with the proper set of values
         if (isZeeman.computed) {self.ZeemanField(isZeeman.axis,value:isZeeman.value)}
         if (isUniaxial.computed) {self.UniaxialField(isUniaxial.axis,value:isUniaxial.value)}
         if (isDamping.computed) {self.Dampening(isDamping.α)}
