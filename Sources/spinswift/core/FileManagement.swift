@@ -9,7 +9,7 @@ import Foundation
 /// - Date: 03/10/2023
 /// - Version: 0.1
 
-public func saveOnFile(data: String, fileName: String) {
+func SaveOnFile(data: String, fileName: String) {
     let DocumentDirURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
     let fileURL = DocumentDirURL.appendingPathComponent(fileName).appendingPathExtension("dat")
     print("Simulation saved in \(fileURL.path)")

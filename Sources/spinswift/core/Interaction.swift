@@ -119,6 +119,9 @@ class Interaction : Codable {
         if (isDamping.computed) {self.Dampening(isDamping.α)}
     }
 
+    func Update(i:Int){  
+    }
+
     func jsonify() throws -> String {
         let data: Data = try JSONEncoder().encode(self)
         let jsonString: String? = String(data:data, encoding:.utf8) 

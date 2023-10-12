@@ -17,7 +17,7 @@ class Integrate: Codable {
         self.h = h
     }
 
-    public func Evolve (stop: Double, Δt: Double, method: String? = nil, file: String){
+    func Evolve (stop: Double, Δt: Double, method: String? = nil, file: String){
         switch method?.lowercased(){
         case "euler"? :
         self.EvolveEuler(stop: stop, Δt: Δt, fileName: file)
@@ -29,7 +29,7 @@ class Integrate: Codable {
         }
     }
 
-    public func EvolveEuler(stop: Double, Δt: Double, fileName: String){
+    func EvolveEuler(stop: Double, Δt: Double, fileName: String){
         var currentTime: Double = 0.0
         var content=String()
 
@@ -37,30 +37,30 @@ class Integrate: Codable {
             content += String(currentTime)
             for a in h.atoms {
                 content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
-                a.advanceSpin(method: "euler", Δt: Δt)
+                a.AdvanceSpin(method: "euler", Δt: Δt)
             }
             content += "\n"
             self.h.Update()
             currentTime+=Δt
         }
         //let home = FileManager.default.homeDirectoryForCurrentUser
-        saveOnFile(data:content, fileName: fileName)
+        SaveOnFile(data:content, fileName: fileName)
     }
 
-    public func EvolveExpLs(stop: Double, Δt: Double, fileName: String){
+    func EvolveExpLs(stop: Double, Δt: Double, fileName: String){
     }
 
-    public func EvolveSymplectic(stop: Double, Δt: Double, fileName: String){
+    func EvolveSymplectic(stop: Double, Δt: Double, fileName: String){
     }
 
     func expLs(method: String, Δt: Double)  {
         let NumberOfAtoms: Int = h.atoms.count
         for i:Int in 0...(NumberOfAtoms-2) {
-            h.atoms[i].advanceSpin(method: method, Δt: Δt/2)
+            h.atoms[i].AdvanceSpin(method: method, Δt: Δt/2)
         }
-        h.atoms[NumberOfAtoms-1].advanceSpin(method: method, Δt: Δt)
+        h.atoms[NumberOfAtoms-1].AdvanceSpin(method: method, Δt: Δt)
         for i: Int in 0...(NumberOfAtoms-2) {
-            h.atoms[NumberOfAtoms-i-2].advanceSpin(method: method, Δt: Δt/2)
+            h.atoms[NumberOfAtoms-i-2].AdvanceSpin(method: method, Δt: Δt/2)
         }
     }
 
