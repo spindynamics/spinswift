@@ -17,6 +17,42 @@ class Integrate: Codable {
         self.h = h
     }
 
+    public func Evolve (stop: Double, Δt: Double, method: String? = nil, file: String){
+        switch method?.lowercased(){
+        case "euler"? :
+        self.EvolveEuler(stop: stop, Δt: Δt, fileName: file)
+        case "expls"? :
+        self.EvolveExpLs(stop: stop, Δt: Δt, fileName: file)
+        case "symplectic"? :
+        self.EvolveSymplectic(stop: stop, Δt: Δt, fileName: file)
+        default: break
+        }
+    }
+
+    public func EvolveEuler(stop: Double, Δt: Double, fileName: String){
+        var currentTime: Double = 0.0
+        var content=String()
+
+        while (currentTime < stop) {
+            content += String(currentTime)
+            for a in h.atoms {
+                content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
+                a.advanceSpin(method: "euler", Δt: Δt)
+            }
+            content += "\n"
+            self.h.Update()
+            currentTime+=Δt
+        }
+        //let home = FileManager.default.homeDirectoryForCurrentUser
+        saveOnFile(data:content, fileName: fileName)
+    }
+
+    public func EvolveExpLs(stop: Double, Δt: Double, fileName: String){
+    }
+
+    public func EvolveSymplectic(stop: Double, Δt: Double, fileName: String){
+    }
+
     func expLs(method: String, Δt: Double)  {
         let NumberOfAtoms: Int = h.atoms.count
         for i:Int in 0...(NumberOfAtoms-2) {
