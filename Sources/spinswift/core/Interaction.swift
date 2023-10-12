@@ -55,9 +55,9 @@ class Interaction : Codable {
     private var isUniaxial : Uniaxial = Uniaxial()
     private var isDemagnetizing : Demagnetizing = Demagnetizing()
 
-    init(_ atoms: [Atom]? = [Atom]()) {
-        self.atoms = atoms!
-        atoms!.forEach {
+    init(_ atoms: [Atom] = [Atom]()) {
+        self.atoms = atoms
+        atoms.forEach {
             $0.ω = Vector3(0,0,0)
         }
     }

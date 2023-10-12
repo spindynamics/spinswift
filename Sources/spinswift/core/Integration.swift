@@ -9,26 +9,29 @@ import Foundation
 /// - Date: 03/10/2023
 /// - Version: 0.1
 
-class integrate {
+class Integrate: Codable {
 
-    var atoms :[Atom]
+    var h:Interaction
 
-    init(_ atoms: [Atom]? = [Atom]()) {
-        self.atoms = atoms!
-        atoms!.forEach {
-            $0.ω = Vector3(0,0,0)
-        }
+    init(_ h: Interaction = Interaction()) {
+        self.h = h
     }
 
-    func expLs(h: Interaction, method: String, Δt: Double) {
-        let NumberOfAtoms: Int = atoms.count
+    func expLs(method: String, Δt: Double)  {
+        let NumberOfAtoms: Int = h.atoms.count
         for i:Int in 0...(NumberOfAtoms-2) {
-            atoms[i].advanceSpin(method: method, Δt: Δt/2)
+            h.atoms[i].advanceSpin(method: method, Δt: Δt/2)
         }
-        atoms[NumberOfAtoms-1].advanceSpin(method: method, Δt: Δt)
+        h.atoms[NumberOfAtoms-1].advanceSpin(method: method, Δt: Δt)
         for i: Int in 0...(NumberOfAtoms-2) {
-            atoms[NumberOfAtoms-i-2].advanceSpin(method: method, Δt: Δt/2)
+            h.atoms[NumberOfAtoms-i-2].advanceSpin(method: method, Δt: Δt/2)
         }
     }
+
+    func jsonify() throws -> String {
+        let data: Data = try JSONEncoder().encode(self)
+        let jsonString: String? = String(data:data, encoding:.utf8) 
+        return jsonString!
+    } 
 
 }

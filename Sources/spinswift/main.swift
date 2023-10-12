@@ -30,5 +30,6 @@ var h: Interaction = Interaction([MTJ[0],MTJ[2]])
 .Dampening(0.0)
 
 print(try! h.jsonify())
-h.Update()
+let s: Integrate = Integrate(h)
+s.expLs(method:"euler",Δt:0.1)
 print(try! h.jsonify())
