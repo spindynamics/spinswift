@@ -38,7 +38,7 @@ public class Vector3 : Codable {
     } 
   }
 
-  public init(_ x: Double, _ y: Double, _ z: Double){
+  public init(_ x: Double, _ y: Double, _ z: Double) {
     self.x = x
     self.y = y
     self.z = z

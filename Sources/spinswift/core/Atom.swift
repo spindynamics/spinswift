@@ -56,7 +56,7 @@ class Atom : Codable {
 
         - Returns: The Cartesian vector pointing the new direction and located on the unit sphere
     */
-   func AdvanceSpin(method: String, Δt: Double){
+   func AdvanceSpin(method: String, Δt: Double) {
         var s: Vector3 = Vector3()
         switch method.lowercased() {
         case "euler" :

@@ -110,7 +110,7 @@ class Interaction : Codable {
         return self
     }
 
-    func Update(){
+    func Update() {
         //erase the effective fields first
         atoms.forEach {$0.ω = Vector3(0,0,0)}
         //If the fields have been computed, then update them with the proper set of values
@@ -119,7 +119,7 @@ class Interaction : Codable {
         if (isDamping.computed) {self.Dampening(isDamping.α)}
     }
 
-    func Update(i:Int){  
+    func Update(i:Int) {  
     }
 
     func jsonify() throws -> String {
