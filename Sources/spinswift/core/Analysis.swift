@@ -31,8 +31,19 @@ class Analysis {
         return (1.0/g)*m
     }
 
-    func GetTemperature() -> Double {
-        let T: Double = 0
+    func GetTorque() -> Vector3 {
+        var t: Vector3 = Vector3()
+        atoms.forEach {
+            t += ($0.ω)×($0.spin)
+        }
+        return t
+    }
+
+    func GetTemperature(coefficient:Double? = 2.0) -> Double {
+        let e: Double = self.GetEnergy()
+        let t: Vector3 = self.GetTorque()
+        let t2: Double = t°t
+        let T: Double = (t2*(ℏ.value))/(e*coefficient!*(k_B.value))
         return T
     }
 }
