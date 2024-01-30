@@ -10,17 +10,17 @@ import Foundation
 /// - Date: 14/04/2023
 /// - Version: 0.1
 class Atom : Codable {
-    /// A name of the atomic species
+    /// Name of the atomic species
     var name : String
-    /// A identifier of the atomic type
+    /// Identifier of the atomic type
     var type : Int
-    /// An atomic Landé factor in Bohr's magneton unit   
+    /// Atomic Landé factor in Bohr's magneton unit   
     var g : Double  
-    /// An atomic Cartesian position 
+    /// Atomic Cartesian position 
     var position : Vector3 
-    /// An atomic Cartesian spin direction
+    /// Atomic Cartesian spin direction
     var spin : Vector3 
-    /// An atomic pulsation vector around its spin spins
+    /// Atomic pulsation vector around its spin spins
     var ω: Vector3 
 
     /**
@@ -37,7 +37,7 @@ class Atom : Codable {
         - Returns: A new atom
     */
     init(name: String? = String(), type: Int? = Int(), position: Vector3? = Vector3(), spin: Vector3? = Vector3(), ω: Vector3? = Vector3(), g: Double? = Double()){
-    //    if name.isEmpty {fatalError("name must be set")}
+    //    if name.isEmpty {fatalError("A name has to be provided")}
         self.name = name!
         self.type = type!
         self.position = position!
@@ -52,7 +52,7 @@ class Atom : Codable {
 
         - Parameters: 
           - method: The type of method used either [euler](euler) or [symplectic](symplectic)
-          - Δt: The timestep used.
+          - Δt: The timestep used (internal unit in ps).
 
         - Returns: The Cartesian vector pointing the new direction and located on the unit sphere
     */
@@ -64,11 +64,16 @@ class Atom : Codable {
         case "symplectic" :
             let ω2: Double = ω°ω
             let c: Double = 0.25*Δt*Δt
-            let c2: Double = 1.0/((1.0 + c*ω2))
-            var s1: Vector3 = Vector3()
-            s1 = c*((2.0*(ω°spin))*ω - ω2*spin)
+            let c2: Double = 1.0/(1.0 + c*ω2)
+            var s1: Vector3 = c*((2.0*(ω°spin))*ω - ω2*spin)
             s1 += Δt * (ω × spin)
             s = c2 * (spin + s1)
+        case "full" :
+            let n: Double = ω.Norm()
+            let Ω: Vector3 = (1.0/n)*ω
+            let ξ: Double = n*Δt
+            let χ: Double = Ω°spin
+            s = cos(ξ)*spin + sin(ξ)*(Ω × spin) + (χ*(1.0-cos(ξ)))*Ω
         default: break
         }
         spin = s
