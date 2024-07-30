@@ -9,3 +9,4 @@ import Foundation
 /// - Author: Pascal Thibaudeau
 /// - Date: 30/07/2025
 /// - Version: 0.1
+
