@@ -1,6 +1,9 @@
 # spinswift
 
-No need to install a swift compiler. Simply cp .bash_aliases in your $HOME and install podman/docker
+No need to install any local swift compiler. Simply install podman/docker and either cp .bash_aliases in your $HOME or prepare your own container as
+```bash
+cd Docker && podman build -t swift-user . && podman run -it --rm --name swift-user
+```
 
 * Run the tests
 ```swift
