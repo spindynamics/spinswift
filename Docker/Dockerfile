@@ -1,4 +1,8 @@
 from swift:latest
+
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone 
+
 ARG USERNAME=swift
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
