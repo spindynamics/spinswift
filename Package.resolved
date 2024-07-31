@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-cmark",
       "state" : {
-        "branch" : "release/5.9.1",
-        "revision" : "f218e5d7691f78b55bfa39b367763f4612486c35"
+        "branch" : "gfm",
+        "revision" : "fc07ab5da47975c5ef5f336acadfc02e8f706d30"
       }
     }
   ],
