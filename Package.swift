@@ -23,5 +23,13 @@ let package: Package = Package(
         .testTarget(
             name: "spinswiftTests",
             dependencies: ["spinswift"]),
+        .systemLibrary(
+            name: "CGSL",
+            pkgConfig: "gsl",
+            providers: [
+                .brew(["gsl"]),
+                .apt(["libgsl-dev"]),
+            ]
+        ),
     ]
 )
