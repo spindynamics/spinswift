@@ -8,7 +8,7 @@ ARG HTTPS_PROXY
 ENV http_proxy $HTTP_PROXY
 ENV https_proxy $HTTPS_PROXY
 
-RUN apt-get update && apt install vim -y
+RUN apt-get update && apt install vim libgsl-dev -y
 
 ARG USERNAME=swift
 ARG USER_UID=1000
