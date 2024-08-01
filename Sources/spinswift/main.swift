@@ -37,4 +37,4 @@ s.expLs(method:"euler",Δt:0.1)
 
 let pulse = LaserExcitation.Pulse(Form: "Triangle", Fluence: 10, Duration: 5E-15, Delay: 0)
 let ttm = LaserExcitation.TTM(EffectiveThickness: 1e-9)
-print(LaserExcitation().ComputeInstantPower(Pulse:pulse,TTM:ttm))
+print(try LaserExcitation().ComputeInstantPower(Pulse:pulse,TTM:ttm))
