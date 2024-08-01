@@ -220,7 +220,7 @@ public class Matrix3 : Codable {
    return Cof.Transpose()  
   }
 
-  // compute the adjunct for a 3x3 Matrix
+  // compute the inverse for a 3x3 Matrix
   func Inverse() -> Matrix3{
    let Adj: Matrix3 = self.Adjoint()
    let Deta: Double = self.Det()
