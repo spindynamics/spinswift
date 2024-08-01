@@ -196,8 +196,8 @@ public class Matrix3 : Codable {
 
     return Matrix3(xx: c1, xy: c2, xz: c3, yx: c4, yy: c5, yz: c6, zx: c7, zy: c8, zz: c9)
   }
-  // compute the cofactor for a 3x3 Matrix 
 
+  // compute the cofactor for a 3x3 Matrix 
   func Cofactor() -> Matrix3 {
     var c1,c2,c3,c4,c5,c6,c7,c8,c9: Double
     c1 = (yy*zz) - (yz*zy)
