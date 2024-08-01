@@ -30,10 +30,74 @@ var h: Interaction = Interaction([MTJ[0],MTJ[2]])
 .Dampening(0.1)
 
 //print(try! h.jsonify())
-//print(try! h.jsonify())
 let s: Integrate = Integrate(h)
 s.expLs(method:"euler",Δt:0.1)
-print(try! h.jsonify())
+//print(try! h.jsonify())
+print("==============================================")
+//Test fucntion print matrix
+var S:Matrix3 = Matrix3(fill:"antisym")
+print("The S matrix")
+S.Print()
+
+print("==============================================")
+
+//Test fuction Double*Matrix
+var X:Matrix3 = 5.0*S
+print("The X matrix = 5*S")
+X.Print()
+
+print("==============================================")
+
+//Test fuction Matrix*Matrix
+var SX: Matrix3 = S * X
+print("The S matrix the X matrix = the SX matrix")
+SX.Print() 
+
+print("==============================================")
+
+//Test fuction Trace of matrix
+var Tr: Double = SX.Trace()
+print("Trace(SX)=",Tr)
+
+print("==============================================")
+
+//Test fuction Determinant of matrix
+var Det: Double = SX.Det()
+print("Det(SX)=",Det)
+
+print("==============================================")
+
+var trsSX: Matrix3 = SX.Transpose()
+print("The transpose of the SX matrix")
+trsSX.Print()
+
+print("==============================================")
+
+var CofSX: Matrix3 = SX.Cofactor()
+print("The cofactor of the SX matrix")
+CofSX.Print()
+
+print("==============================================")
+
+var AdjSX: Matrix3 = SX.Adjoint()
+print("The Adjoint of the SX matrix")
+AdjSX.Print()
+
+print("==============================================")
+
+var InvSX: Matrix3 = SX.Inverse()
+print("The Inverse of the SX matrix")
+InvSX.Print()
+
+print("==============================================")
+
+var v: Vector3 = Vector3(1.0,0.0,1.0)
+
+var Axv: Matrix3 = SX × v
+print("a vector v =(1,0,1) cross the matrix SX")
+Axv.Print()
+
+print("==============================================")
 
 var powSX: Matrix3 = SX^3
 print("The power of the SX matrix")
