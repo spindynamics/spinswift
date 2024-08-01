@@ -4,7 +4,6 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
 import Foundation
 /// This source file for managing The general settings of spinswift code
 /// All general settings regarding format, strucutre, color and generalities is done here
-/// The purpose of this file is to manioulate ojects that will be used for setting the inout promatting. 
 /// - Author: Mouad Fattouhi 
 /// - Date: 01/08/2024
 /// - Version: 0.1
