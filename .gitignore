@@ -41,6 +41,10 @@ DerivedData/
 *.dSYM.zip
 *.dSYM
 
+##run in cluster
+*.pbs
+*.log
+
 ## Playgrounds
 timeline.xctimeline
 playground.xcworkspace
