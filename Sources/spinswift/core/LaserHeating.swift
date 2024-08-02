@@ -13,13 +13,13 @@ import Foundation
 class LaserExcitation : Codable {
 
     struct Temperatures : Codable {
-        var Phonon : Double
-        var Electron : Double
-        var Spin : Double
+        var Electron : Double 
+        var Phonon : Double 
+        var Spin : Double 
 
-        init(Phonon: Double? = Double(), Electron : Double? = Double(), Spin : Double? = Double()) {
-            self.Phonon = Phonon!
+        init(Electron : Double? = Double(), Phonon: Double? = Double(), Spin : Double? = Double()) {
             self.Electron = Electron!
+            self.Phonon = Phonon!
             self.Spin = Spin!
         }
     }
@@ -55,27 +55,29 @@ class LaserExcitation : Codable {
         }
         var EffectiveThickness : Double
         var InitialTemperature : Double
+        var Damping : Double
         var HeatCapacity : HeatCapacity?
         var Coupling : Coupling?
 
-        init (EffectiveThickness: Double? = Double(), InitialTemperature: Double? = Double(), HeatCapacity: HeatCapacity? = HeatCapacity(), Coupling: Coupling? = Coupling()) {
+        init (EffectiveThickness: Double? = Double(), InitialTemperature: Double? = Double(), Damping: Double? = Double(), HeatCapacity: HeatCapacity? = HeatCapacity(), Coupling: Coupling? = Coupling()) {
             self.EffectiveThickness = EffectiveThickness!
             self.InitialTemperature = InitialTemperature!
+            self.Damping = Damping!
             self.HeatCapacity = HeatCapacity!
             self.Coupling = Coupling!
         }
     }
 
     var CurrentTime : Double
+    var temperatures : Temperatures
     var pulse : Pulse
     var ttm : TTM
-    var temperatures : Temperatures
     
-    init(CurrentTime: Double? = Double(), pulse: Pulse? = Pulse(), ttm : TTM? = TTM(), temperatures: Temperatures? = Temperatures()) {
+    init(CurrentTime: Double? = Double(), temperatures: Temperatures? = Temperatures(), pulse: Pulse? = Pulse(), ttm : TTM? = TTM()) {
         self.CurrentTime = CurrentTime!
+        self.temperatures = temperatures!
         self.pulse = pulse!
         self.ttm = ttm!
-        self.temperatures = temperatures!
     }
 
     func ComputeInstantPower() -> Double {
@@ -94,37 +96,24 @@ class LaserExcitation : Codable {
         return power
     }
 
-    func ODEGaussian(t:Double, y:UnsafePointer<Double>, f:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
-        let Φ: Double = params[0]
-        let σ: Double = params[1]
-        let g: Double = params[2]
-        let γ: Double = params[3]
-        let Cp: Double = params[4]
-        let t_ls: Double = params[5]
-        let τ_ls: Double = params[6]
-        let T_ref: Double = params[7]
-        let t_FM: Double  = params[8]
+    func AdvanceTemperaturesGaussian(Δt : Double)  {
+        
+        let g: Double = self.ttm.Coupling!.ElectronPhonon
+        let γ: Double = self.ttm.HeatCapacity!.Electron // Ce=gamma*Te
+        let Cp: Double = self.ttm.HeatCapacity!.Phonon
+        let τ_ls: Double = self.ttm.Damping
+        let T_ref: Double = self.ttm.InitialTemperature
 
-        let pulse: Pulse = LaserExcitation.Pulse(Form:"Gaussian",Fluence:Φ,Duration:σ,Delay:t_ls)
-        let ttm: TTM = LaserExcitation.TTM(EffectiveThickness:t_FM)
+        let Te : Double = self.temperatures.Electron
+        let Ti : Double = self.temperatures.Phonon
 
-        var f0 : Double = LaserExcitation(CurrentTime:t,pulse:pulse,ttm:ttm).ComputeInstantPower()
-        f0 = f0/(γ*y[0]) // Laser power
-        f0 -= (g/γ)*(1.0-(y[1]/y[0])) // f[0]=dTe/dt
-        f0 -= (1.0/(τ_ls))*(y[0]-T_ref) // Newton cooling 
-        var f : [Double] = [Double()]
-        f.append(f0)
-        f0 = (g/Cp)*(y[0]-y[1]) // f[1]=dTi/dt
-        f.append(f0)
-
-        return 0
-    }
-
-    func ODEJACGaussian(t:Double, y:UnsafePointer<Double>, dfdy:UnsafePointer<Double>, dfdt:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
-        return 0
-    }
-
-    func UpdateTemperatures() {
+        var f0 : Double = ComputeInstantPower()
+        f0 = f0/(γ*Te) // Laser power
+        f0 -= (g/γ)*(1.0-(Ti/Te)) // f[0]=dTe/dt
+        f0 -= (1.0/(τ_ls))*(Te-T_ref) // Newton cooling 
+        self.temperatures.Electron += f0*Δt
+        f0 = (g/Cp)*(Te-Ti) // f[1]=dTi/dt
+        self.temperatures.Phonon += f0*Δt
     }
 
     func jsonify() throws -> String {
