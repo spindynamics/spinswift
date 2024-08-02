@@ -94,33 +94,33 @@ class LaserExcitation : Codable {
         return power
     }
 
-    func TTMODEGaussian(t:Double, y:UnsafePointer<Double>, f:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
-        let P0: Double    = params[0]
-        let sigma: Double = params[1]
-        let g: Double     = params[2]
-        let gamma: Double = params[3]
-        let Cp: Double    = params[4]
-        let t_ls: Double  = params[5]
-        let tau_ls: Double = params[6]
+    func ODEGaussian(t:Double, y:UnsafePointer<Double>, f:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
+        let Φ: Double = params[0]
+        let σ: Double = params[1]
+        let g: Double = params[2]
+        let γ: Double = params[3]
+        let Cp: Double = params[4]
+        let t_ls: Double = params[5]
+        let τ_ls: Double = params[6]
         let T_ref: Double = params[7]
         let t_FM: Double  = params[8]
 
-        let pulse: Pulse = LaserExcitation.Pulse(Form:"Gaussian",Fluence:P0,Duration:sigma,Delay:t_ls)
+        let pulse: Pulse = LaserExcitation.Pulse(Form:"Gaussian",Fluence:Φ,Duration:σ,Delay:t_ls)
         let ttm: TTM = LaserExcitation.TTM(EffectiveThickness:t_FM)
 
-        var f0 : Double = LaserExcitation(pulse:pulse,ttm:ttm).ComputeInstantPower()
-        f0 = f0/(gamma*y[0]) // Laser power
-        f0 += -(g/gamma)*(1.0-(y[1]/y[0])) // f[0]=dTe/dt
-        f0 += -(1.0/(tau_ls))*(y[0]-T_ref) // Newton cooling 
+        var f0 : Double = LaserExcitation(CurrentTime:t,pulse:pulse,ttm:ttm).ComputeInstantPower()
+        f0 = f0/(γ*y[0]) // Laser power
+        f0 -= (g/γ)*(1.0-(y[1]/y[0])) // f[0]=dTe/dt
+        f0 -= (1.0/(τ_ls))*(y[0]-T_ref) // Newton cooling 
         var f : [Double] = [Double()]
         f.append(f0)
-        f0 = (g/Cp)*(y[0]-y[1]) //f[1]=dTi/dt
+        f0 = (g/Cp)*(y[0]-y[1]) // f[1]=dTi/dt
         f.append(f0)
 
         return 0
     }
 
-    func TTMODEJACGaussian(t:Double, y:UnsafePointer<Double>, dfdy:UnsafePointer<Double>, dfdt:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
+    func ODEJACGaussian(t:Double, y:UnsafePointer<Double>, dfdy:UnsafePointer<Double>, dfdt:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
         return 0
     }
 
