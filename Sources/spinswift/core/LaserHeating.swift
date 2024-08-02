@@ -10,21 +10,21 @@ import Foundation
 /// - Date: 30/07/2025
 /// - Version: 0.1
 
-struct LaserExcitation : Codable {
+class LaserExcitation : Codable {
 
     struct Temperatures : Codable {
-        var Ions : Double
-        var Electrons : Double
-        var Spins : Double
+        var Phonon : Double
+        var Electron : Double
+        var Spin : Double
 
-        init(Ions: Double? = Double(), Electrons : Double? = Double(), Spins : Double? = Double()) {
-            self.Ions = Ions!
-            self.Electrons = Electrons!
-            self.Spins = Spins!
+        init(Phonon: Double? = Double(), Electron : Double? = Double(), Spin : Double? = Double()) {
+            self.Phonon = Phonon!
+            self.Electron = Electron!
+            self.Spin = Spin!
         }
     }
 
-    public struct Pulse : Codable {
+    struct Pulse : Codable {
         var Form : String
         var Fluence : Double
         var Duration : Double
@@ -38,18 +38,10 @@ struct LaserExcitation : Codable {
         }
     }
 
-    public struct TTM : Codable {
-        struct HeatCapacity : Codable {
-            var Electron : Double
-            var Phonon : Double
-            var Spin : Double 
+    struct TTM : Codable {
 
-            init(Electron: Double? = Double(), Phonon: Double? = Double(), Spin:Double? = Double()){
-                self.Electron = Electron!
-                self.Phonon = Phonon!
-                self.Spin = Spin!
-            }
-        }
+        typealias HeatCapacity = Temperatures
+
         struct Coupling : Codable {
             var ElectronPhonon : Double
             var ElectronSpin : Double
@@ -63,27 +55,81 @@ struct LaserExcitation : Codable {
         }
         var EffectiveThickness : Double
         var InitialTemperature : Double
+        var HeatCapacity : HeatCapacity?
+        var Coupling : Coupling?
 
-        init (EffectiveThickness: Double? = Double(), InitialTemperature: Double? = Double()) {
+        init (EffectiveThickness: Double? = Double(), InitialTemperature: Double? = Double(), HeatCapacity: HeatCapacity? = HeatCapacity(), Coupling: Coupling? = Coupling()) {
             self.EffectiveThickness = EffectiveThickness!
             self.InitialTemperature = InitialTemperature!
+            self.HeatCapacity = HeatCapacity!
+            self.Coupling = Coupling!
         }
     }
 
     var CurrentTime : Double
-
-    init(CurrentTime: Double? = Double()) {
+    var pulse : Pulse
+    var ttm : TTM
+    var temperatures : Temperatures
+    
+    init(CurrentTime: Double? = Double(), pulse: Pulse? = Pulse(), ttm : TTM? = TTM(), temperatures: Temperatures? = Temperatures()) {
         self.CurrentTime = CurrentTime!
+        self.pulse = pulse!
+        self.ttm = ttm!
+        self.temperatures = temperatures!
     }
 
-    func ComputeInstantPower(Pulse : Pulse = Pulse(), TTM : TTM = TTM()) throws -> Double {
+    func ComputeInstantPower() -> Double {
         var power = Double()
 
-        switch Pulse.Form.lowercased() {
+        switch self.pulse.Form.lowercased() {
             case "gaussian":
-                power = (Pulse.Fluence/(Pulse.Duration*TTM.EffectiveThickness))*exp(-((self.CurrentTime-Pulse.Delay)*(self.CurrentTime-Pulse.Delay))/(0.36*Pulse.Duration*Pulse.Duration))
+                let Φ = self.pulse.Fluence
+                let σ = self.pulse.Duration
+                let δ = self.pulse.Delay
+                let ζ = self.ttm.EffectiveThickness
+                let t = self.CurrentTime
+                power = (Φ/(σ*ζ))*exp(-((t-δ)*(t-δ))/(0.36*σ*σ))
             default: break
         }
         return power
     }
+
+    func TTMODEGaussian(t:Double, y:UnsafePointer<Double>, f:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
+        let P0: Double    = params[0]
+        let sigma: Double = params[1]
+        let g: Double     = params[2]
+        let gamma: Double = params[3]
+        let Cp: Double    = params[4]
+        let t_ls: Double  = params[5]
+        let tau_ls: Double = params[6]
+        let T_ref: Double = params[7]
+        let t_FM: Double  = params[8]
+
+        let pulse: Pulse = LaserExcitation.Pulse(Form:"Gaussian",Fluence:P0,Duration:sigma,Delay:t_ls)
+        let ttm: TTM = LaserExcitation.TTM(EffectiveThickness:t_FM)
+
+        var f0 : Double = LaserExcitation(pulse:pulse,ttm:ttm).ComputeInstantPower()
+        f0 = f0/(gamma*y[0]) // Laser power
+        f0 += -(g/gamma)*(1.0-(y[1]/y[0])) // f[0]=dTe/dt
+        f0 += -(1.0/(tau_ls))*(y[0]-T_ref) // Newton cooling 
+        var f : [Double] = [Double()]
+        f.append(f0)
+        f0 = (g/Cp)*(y[0]-y[1]) //f[1]=dTi/dt
+        f.append(f0)
+
+        return 0
+    }
+
+    func TTMODEJACGaussian(t:Double, y:UnsafePointer<Double>, dfdy:UnsafePointer<Double>, dfdt:UnsafePointer<Double>, params:UnsafePointer<Double> ) -> Int {
+        return 0
+    }
+
+    func UpdateTemperatures() {
+    }
+
+    func jsonify() throws -> String {
+        let data: Data = try JSONEncoder().encode(self)
+        let jsonString: String? = String(data:data, encoding:.utf8) 
+        return jsonString!
+    } 
 }
