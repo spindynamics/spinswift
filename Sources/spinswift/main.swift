@@ -33,6 +33,7 @@ var h: Interaction = Interaction([MTJ[0],MTJ[2]])
 let s: Integrate = Integrate(h)
 s.expLs(method:"euler",Δt:0.1)
 //print(try! h.jsonify())
+
 print("==============================================")
 //Test fucntion print matrix
 var S:Matrix3 = Matrix3(fill:"antisym")

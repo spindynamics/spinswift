@@ -224,7 +224,7 @@ public class Matrix3 : Codable {
    let Adj: Matrix3 = self.Adjoint()
    let Deta: Double = self.Det()
    if (Deta == 0) {print(WriteCol.red + "This is a singular Matrix: No invese is found" + WriteCol.reset)
-   return  Matrix3(fill:"zeors")}
+   return  Matrix3(fill:"zeros")}
    else {return  (1/Deta)*Adj} 
   }
 
