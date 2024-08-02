@@ -118,7 +118,6 @@ public class Vector3 : Codable {
   }
 
 
-/**/
 /// A class for managing 3 by 3 Matrices
 /// 
 /// The purpose of this class is to interact with 3 by 3 Matrices. 
@@ -301,12 +300,10 @@ public class Matrix3 : Codable {
    return d
   }
  
-  /// Implementation of Equatable Vector3
-  /*
-  public static func == (a: Vector3, b: Vector3) -> Bool {
-    return (a.x == b.x) && (a.y == b.y) && (a.z == b.z)
+  /// Comparing two matrices
+  public static func == (a: Matrix3, b: Matrix3) -> Bool {
+    return (a.xx == b.xx) && (a.xy == b.xy) && (a.xz == b.xz) && (a.yx == b.yx) && (a.yy == b.yy) && (a.yz == b.yz) && (a.zx == b.zx) && (a.zy == b.zy) && (a.zz == b.zz)  
   }
-  */
 
   /// A function to print data in a json format
   public func jsonify() throws -> String {
