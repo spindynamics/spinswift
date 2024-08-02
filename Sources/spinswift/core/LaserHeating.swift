@@ -22,6 +22,20 @@ class LaserExcitation : Codable {
             self.Phonon = Phonon!
             self.Spin = Spin!
         }
+
+        static func + (a: Temperatures, b: Temperatures) -> Temperatures {
+            return Temperatures(Electron: (a.Electron+b.Electron), Phonon: (a.Phonon+b.Phonon), Spin: (a.Spin+b.Spin))
+        }
+        
+        static func += (a: inout Temperatures, b: Temperatures) {
+            var c: Temperatures = Temperatures()
+            c = a + b
+            a = c
+        }
+
+        static func * (a: Double, b: Temperatures) -> Temperatures {
+            return Temperatures(Electron: a*(b.Electron), Phonon: a*(b.Phonon), Spin: a*(b.Spin))
+        }
     }
 
     struct Pulse : Codable {
@@ -80,7 +94,7 @@ class LaserExcitation : Codable {
         self.ttm = ttm!
     }
 
-    func ComputeInstantPower() -> Double {
+    func ComputeInstantPower(time: Double) -> Double {
         var power = Double()
 
         switch self.pulse.Form.lowercased() {
@@ -89,31 +103,47 @@ class LaserExcitation : Codable {
                 let σ = self.pulse.Duration
                 let δ = self.pulse.Delay
                 let ζ = self.ttm.EffectiveThickness
-                let t = self.CurrentTime
-                power = (Φ/(σ*ζ))*exp(-((t-δ)*(t-δ))/(0.36*σ*σ))
+                power = (Φ/(σ*ζ))*exp(-((time-δ)*(time-δ))/(0.36*σ*σ))
             default: break
         }
         return power
     }
 
-    func AdvanceTemperaturesGaussian(Δt : Double)  {
-        
+    private func LHS(time: Double, temperatures: Temperatures) -> Temperatures {
         let g: Double = self.ttm.Coupling!.ElectronPhonon
         let γ: Double = self.ttm.HeatCapacity!.Electron // Ce=gamma*Te
         let Cp: Double = self.ttm.HeatCapacity!.Phonon
         let τ_ls: Double = self.ttm.Damping
         let T_ref: Double = self.ttm.InitialTemperature
 
-        let Te : Double = self.temperatures.Electron
-        let Ti : Double = self.temperatures.Phonon
+        let Te : Double = temperatures.Electron
+        let Ti : Double = temperatures.Phonon
 
-        var f0 : Double = ComputeInstantPower()
+        var rate: Temperatures = LaserExcitation.Temperatures()
+
+        var f0 : Double = ComputeInstantPower(time:time)
         f0 = f0/(γ*Te) // Laser power
         f0 -= (g/γ)*(1.0-(Ti/Te)) // f[0]=dTe/dt
-        f0 -= (1.0/(τ_ls))*(Te-T_ref) // Newton cooling 
-        self.temperatures.Electron += f0*Δt
-        f0 = (g/Cp)*(Te-Ti) // f[1]=dTi/dt
-        self.temperatures.Phonon += f0*Δt
+        rate.Electron = f0 - (1.0/(τ_ls))*(Te-T_ref) // Newton cooling
+        rate.Phonon = (g/Cp)*(Te-Ti) // f[1]=dTi/dt 
+        return rate
+    }
+
+    func AdvanceTemperaturesGaussian(method:String, Δt : Double)  {
+          switch method.lowercased() {
+            case "euler", "rk1":
+                self.temperatures += Δt*LHS(time:self.CurrentTime,temperatures:self.temperatures)
+            case "rk2":
+                let k1: Temperatures = self.temperatures + 0.5*Δt*LHS(time:self.CurrentTime,temperatures:self.temperatures)
+                self.temperatures += Δt*LHS(time:self.CurrentTime+0.5*Δt,temperatures:k1)
+            case "rk4":
+                let k1: Temperatures = LHS(time:self.CurrentTime,temperatures:self.temperatures)
+                let k2: Temperatures = LHS(time:self.CurrentTime+0.5*Δt,temperatures:self.temperatures+0.5*Δt*k1)
+                let k3: Temperatures = LHS(time:self.CurrentTime+0.5*Δt,temperatures:self.temperatures+0.5*Δt*k2)
+                let k4: Temperatures = LHS(time:self.CurrentTime+Δt,temperatures:self.temperatures+Δt*k3)
+                self.temperatures += (Δt/6)*(k1+2*k2+2*k3+k4)
+            default: break
+            }   
     }
 
     func jsonify() throws -> String {

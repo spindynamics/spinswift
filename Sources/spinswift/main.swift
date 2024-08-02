@@ -40,11 +40,11 @@ let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:2.2E6)
 let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 2.5E17)
 let ttm = LaserExcitation.TTM(EffectiveThickness: 1e-9, InitialTemperature: 300, Damping: 1E-12, HeatCapacity: Cp, Coupling: G)
 let laser = LaserExcitation(temperatures: .init(Electron:ttm.InitialTemperature, Phonon:ttm.InitialTemperature), pulse:pulse,ttm:ttm)
-print(laser.ComputeInstantPower())
+print(laser.ComputeInstantPower(time:laser.CurrentTime))
 
 let timestep = 1E-15
 for _ in 0...1500 {
-    laser.AdvanceTemperaturesGaussian(Δt:timestep)
+    laser.AdvanceTemperaturesGaussian(method:"rk4",Δt:timestep)
     laser.CurrentTime += timestep
     print(laser.CurrentTime,laser.temperatures.Electron,laser.temperatures.Phonon)
 }
