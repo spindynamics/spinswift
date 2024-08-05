@@ -48,18 +48,73 @@ for _ in 0...1500 {
     laser.CurrentTime += timestep
     print(laser.CurrentTime,laser.temperatures.Electron,laser.temperatures.Phonon)
 }
-//print(Analysis(h.atoms).GetTemperature())
 
-let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 10.0, Duration: 60E-15, Delay: 0)
-let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:2.2E6)
-let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 2.5E17)
-let ttm = LaserExcitation.TTM(EffectiveThickness: 1e-9, InitialTemperature: 300, Damping: 1E-12, HeatCapacity: Cp, Coupling: G)
-let laser = LaserExcitation(temperatures: .init(Electron:ttm.InitialTemperature, Phonon:ttm.InitialTemperature), pulse:pulse,ttm:ttm)
-print(laser.ComputeInstantPower(time:laser.CurrentTime))
+print("==============================================")
+//Test fucntion print matrix
+var S:Matrix3 = Matrix3(fill:"antisym")
+print("The S matrix")
+S.Print()
 
-let timestep = 1E-15
-for _ in 0...1500 {
-    laser.AdvanceTemperaturesGaussian(method:"rk4",Δt:timestep)
-    laser.CurrentTime += timestep
-    print(laser.CurrentTime,laser.temperatures.Electron,laser.temperatures.Phonon)
-}
+print("==============================================")
+
+//Test fuction Double*Matrix
+var X:Matrix3 = 5.0*S
+print("The X matrix = 5*S")
+X.Print()
+
+print("==============================================")
+
+//Test fuction Matrix*Matrix
+var SX: Matrix3 = S * X
+print("The S matrix the X matrix = the SX matrix")
+SX.Print() 
+
+print("==============================================")
+
+//Test fuction Trace of matrix
+var Tr: Double = SX.Trace()
+print("Trace(SX)=",Tr)
+
+print("==============================================")
+
+//Test fuction Determinant of matrix
+var Det: Double = SX.Det()
+print("Det(SX)=",Det)
+
+print("==============================================")
+
+var trsSX: Matrix3 = SX.Transpose()
+print("The transpose of the SX matrix")
+trsSX.Print()
+
+print("==============================================")
+
+var CofSX: Matrix3 = SX.Cofactor()
+print("The cofactor of the SX matrix")
+CofSX.Print()
+
+print("==============================================")
+
+var AdjSX: Matrix3 = SX.Adjoint()
+print("The Adjoint of the SX matrix")
+AdjSX.Print()
+
+print("==============================================")
+
+var InvSX: Matrix3 = SX.Inverse()
+print("The Inverse of the SX matrix")
+InvSX.Print()
+
+print("==============================================")
+
+var v: Vector3 = Vector3(1.0,0.0,1.0)
+
+var Axv: Matrix3 = SX × v
+print("a vector v =(1,0,1) cross the matrix SX")
+Axv.Print()
+
+print("==============================================")
+
+var powSX: Matrix3 = SX^3
+print("The power of the SX matrix")
+powSX.Print()

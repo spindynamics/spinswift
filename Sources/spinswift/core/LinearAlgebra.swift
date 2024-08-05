@@ -223,7 +223,7 @@ public class Matrix3 : Codable {
   func Inverse() -> Matrix3{
    let Adj: Matrix3 = self.Adjoint()
    let Deta: Double = self.Det()
-   if (Deta == 0) {print(WriteCol.red + "This is a singular Matrix: No invese is found" + WriteCol.reset)
+   if (Deta == 0) {print(GeneralSettings.WriteCol.red+"This is a singular Matrix: No invese is found"+GeneralSettings.WriteCol.reset)
    return  Matrix3(fill:"zeros")}
    else {return  (1/Deta)*Adj} 
   }
