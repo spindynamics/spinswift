@@ -30,18 +30,18 @@ class Integrate: Codable {
     }
 
     func EvolveEuler(stop: Double, Δt: Double, fileName: String) {
-        var currentTime: Double = 0.0
+        var time: Double = 0.0
         var content=String()
 
-        while (currentTime < stop) {
-            content += String(currentTime)
+        while (time < stop) {
+            content += String(time)
             for a in h.atoms {
                 content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
                 a.AdvanceSpin(method: "euler", Δt: Δt)
             }
             content += "\n"
             self.h.Update()
-            currentTime+=Δt
+            time+=Δt
         }
         //let home = FileManager.default.homeDirectoryForCurrentUser
         SaveOnFile(data:content, fileName: fileName)
