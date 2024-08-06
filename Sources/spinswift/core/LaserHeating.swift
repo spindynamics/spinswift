@@ -30,6 +30,10 @@ class LaserExcitation : Codable {
         static func + (a: Temperatures, b: Temperatures) -> Temperatures {
             return Temperatures(Electron: (a.Electron+b.Electron), Phonon: (a.Phonon+b.Phonon), Spin: (a.Spin+b.Spin))
         }
+        /// subtraction of two temperatures
+        static func - (a: Temperatures, b: Temperatures) -> Temperatures {
+            return Temperatures(Electron: (a.Electron-b.Electron), Phonon: (a.Phonon-b.Phonon), Spin: (a.Spin-b.Spin))
+        }
         /// addition and affectation of two temperatures
         static func += (a: inout Temperatures, b: Temperatures) {
             var c: Temperatures = Temperatures()
@@ -131,23 +135,30 @@ class LaserExcitation : Codable {
         return power
     }
 
+    /// Compute the rate of variation of the temperatures in K/s
     private func LHS(time: Double, temperatures: Temperatures) -> Temperatures {
-        let g: Double = self.ttm.Coupling!.ElectronPhonon
+        let Cep: Double = self.ttm.Coupling!.ElectronPhonon
+        let Ces: Double = self.ttm.Coupling!.ElectronSpin
+        let Cps: Double = self.ttm.Coupling!.PhononSpin
         let γ: Double = self.ttm.HeatCapacity!.Electron // Ce=gamma*Te
         let Cp: Double = self.ttm.HeatCapacity!.Phonon
+        let Cs: Double = self.ttm.HeatCapacity!.Spin
         let τ_ls: Double = self.ttm.Damping
         let T_ref: Double = self.ttm.InitialTemperature
 
         let Te : Double = temperatures.Electron
-        let Ti : Double = temperatures.Phonon
+        let Tp : Double = temperatures.Phonon
+        let Ts : Double = temperatures.Spin
 
         var rate: Temperatures = LaserExcitation.Temperatures()
 
         var f0 : Double = Power(time:time)
         f0 = f0/(γ*Te) // Laser power
-        f0 -= (g/γ)*(1.0-(Ti/Te)) // f[0]=dTe/dt
+        f0 -= (Cep/γ)*(1.0-(Tp/Te))
+        f0 -= (Ces/γ)*(1.0-(Ts/Te))// f[0]=dTe/dt
         rate.Electron = f0 - (1.0/(τ_ls))*(Te-T_ref) // Newton cooling
-        rate.Phonon = (g/Cp)*(Te-Ti) // f[1]=dTi/dt 
+        rate.Phonon = (Cep/Cp)*(Te-Tp)+(Cps/Cp)*(Ts-Tp) // f[1]=dTp/dt
+        rate.Spin = (Ces/Cs)*(Te-Ts)+(Cps/Cs)*(Tp-Ts) // f[2]=dTs/dt 
         return rate
     }
 

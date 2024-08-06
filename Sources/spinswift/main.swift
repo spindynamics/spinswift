@@ -36,15 +36,15 @@ s.expLs(method:"euler",Δt:0.1)
 //print(Analysis(h.atoms).GetTemperature())
 
 let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 10.0, Duration: 60E-15, Delay: 0)
-let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:2.2E6)
+let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:2.2E6, Spin:2.2E6)
 let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 2.5E17)
 let ttm = LaserExcitation.TTM(EffectiveThickness: 1e-9, InitialTemperature: 300, Damping: 1E-12, HeatCapacity: Cp, Coupling: G)
-let laser = LaserExcitation(temperatures: .init(Electron:ttm.InitialTemperature, Phonon:ttm.InitialTemperature), pulse:pulse,ttm:ttm)
+let laser = LaserExcitation(temperatures: .init(Electron:ttm.InitialTemperature, Phonon:ttm.InitialTemperature, Spin:ttm.InitialTemperature), pulse:pulse,ttm:ttm)
 //print(laser.Power(time:laser.time))
 
-for _ in 0...100000 {
-    let timestep = laser.EstimateTimestep(factor:0.1)
+for _ in 0...30000 {
+    let timestep = laser.EstimateTimestep(factor:0.8)
     laser.AdvanceTemperaturesGaussian(method:"rk4",Δt:timestep)
     laser.time += timestep
-    print(String(format:"%e %f %f",laser.time,laser.temperatures.Electron,laser.temperatures.Phonon))
+    print(String(format:"%e %f %f %f",laser.time,laser.temperatures.Electron,laser.temperatures.Phonon,laser.temperatures.Spin))
 }
