@@ -132,8 +132,6 @@ public class Vector3 : Codable {
   func Distance(_ a: Vector3, _ b: Vector3) -> Double {
     return ((a-b)°(a-b)).squareRoot()
   }
-<<<<<<< Updated upstream
-=======
 
 
 /// A class for managing 3 by 3 Matrices
@@ -353,6 +351,3 @@ public class Matrix3 : Codable {
         return jsonString!
     } 
 }
-
-
->>>>>>> Stashed changes
