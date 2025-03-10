@@ -22,5 +22,5 @@ Building for debugging...
 [4/5] Emitting module spinswift
 [5/7] Write Objects.LinkFileList
 [6/7] Linking spinswift
-Build complete! (5.18s)
+Build complete! (3.68s)
 Simulation saved in /home/mf279086/Documents/AOS_FeGd.dat

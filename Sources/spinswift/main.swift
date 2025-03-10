@@ -299,14 +299,14 @@ let b2: Double = 2.85e-3     // Van Hove singularity fit
 
 //Intelattice coupling 
 
-let J_FeGd: Double = -17.6
+let J_FeGd: Double = -6.8
 
 //Define parameters 
 let mm = Atom.Moments(spin:Vector3(0.0,0.0,1),sigma: Matrix3(0,0,0,0,0,0,0,0,1))
 let mm2 = Atom.Moments(spin:Vector3(0.0,0.0,-1),sigma: Matrix3(0,0,0,0,0,0,0,0,1))
 let initials1 = InitialParam(name:"Fe", type: 1, moments: mm, g: 2.02, ℇ: D_02, Vat: V_02, Dref: Dcut2, vanHove: b2)
-let initials2 = InitialParam(name:"Gd", type: 2, moments: mm2, g: 3.02, ℇ: D_01, Vat: V_01, Dref: Dcut1, vanHove: b1)
-let inisimulation = SimulationProgram.Inputs(T_initial: 0, T_step: 25, T_final: 500, time_step: 1e-3, stop: 20, α: 0.05, thermostat: "quantum")
+let initials2 = InitialParam(name:"Gd", type: 2, moments: mm2, g: 2.02, ℇ: D_01, Vat: V_01, Dref: Dcut1, vanHove: b1)
+let inisimulation = SimulationProgram.Inputs(T_initial: 0, T_step: 25, T_final: 500, time_step: 1e-3, stop: 20, α: 0.03, thermostat: "quantum")
 var Fe: [Atom] = [Atom(),Atom(),Atom(),Atom()]
 Fe[0].position = Vector3(0.0, 0.0, 0.0)
 Fe[1].position = Vector3(0.0, 0.5, 0.5)
@@ -321,16 +321,16 @@ let crystalStructure = GenerateCrystalStructure(UCAtoms: unitCellAtoms, supercel
 //Define boundary conditions 
 let Boundaries = BoundaryConditions(BoxSize: 0.363*Vector3(3,3,3) ,PBC: "on")
 //Alloy
-let Alloy = substituteRandomAtoms(structure: crystalStructure, InitParam: initials2, Percentage: 25) 
+let Alloy = substituteRandomAtoms(structure: crystalStructure, InitParam: initials2, Percentage: 50) 
 
 //for i in 0..<Alloy.count {print(String(Alloy[i].type))}
 
 var h: Interaction = Interaction(Alloy)
-.ExchangeField(typeI:1,typeJ:1,value:J_FeFe/ℏ.value,Rcut:0.257,BCs:Boundaries)
-.ExchangeField(typeI:2,typeJ:2,value:J_GdGd/ℏ.value,Rcut:0.257,BCs:Boundaries)
+//.ExchangeField(typeI:1,typeJ:1,value:J_FeFe/ℏ.value,Rcut:0.257,BCs:Boundaries)
+//.ExchangeField(typeI:2,typeJ:2,value:J_GdGd/ℏ.value,Rcut:0.257,BCs:Boundaries)
 .ExchangeField(typeI:1,typeJ:2,value:J_FeGd/ℏ.value,Rcut:0.257,BCs:Boundaries)
-.UniaxialField(Vector3(direction:"+z"), value: 0.050369)
-//.ZeemanField(Vector3(direction:"+z"), value: 0.5)
+//.UniaxialField(Vector3(direction:"+z"), value: 0.050369)
+.ZeemanField(Vector3(direction:"+z"), value: -1.5)
 
 //print(try! h.jsonify())
 

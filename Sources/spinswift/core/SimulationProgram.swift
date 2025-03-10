@@ -107,10 +107,10 @@ class SimulationProgram : Codable {
     //Laser Pulse programe
 
    private func opticalPulse(IP: Inputs) {
-        let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 44.0, Duration: 60E-15, Delay: 5e-12)
-        let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:4e6)
-        let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 30e17)
-        let ttm = LaserExcitation.TTM(EffectiveThickness:20e-9, InitialTemperature: 83, Damping: 5E-12, HeatCapacity: Cp, Coupling: G)
+        let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 0.61*44.0, Duration: 60E-15, Delay: 5e-12)
+        let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:8e6)
+        let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 10e17)
+        let ttm = LaserExcitation.TTM(EffectiveThickness:40E-9, InitialTemperature: 83, Damping: 100E-12, HeatCapacity: Cp, Coupling: G)
         let laser = LaserExcitation(temperatures: .init(Electron:ttm.InitialTemperature, Phonon:ttm.InitialTemperature, Spin:ttm.InitialTemperature), pulse:pulse,ttm:ttm)
         var content: String = String()
         let Δt : Double = IP.time_step
@@ -132,7 +132,7 @@ class SimulationProgram : Codable {
             laser.CurrentTime += Δt*1E-12
             for a in I.h.atoms {
                 
-                if (a.type == 2) {alp=0.03}
+                if (a.type == 2) {alp=0.05}
 
                 a.advanceMoments(method: "rk4", Δt: Δt, T: laser.temperatures.Electron, α: alp, thermostat: IP.thermostat)
             } 
