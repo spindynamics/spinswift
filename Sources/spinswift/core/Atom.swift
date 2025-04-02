@@ -165,7 +165,9 @@ private func rhs(moments: Moments, Temp: Double? = Double(), alpha: Double? = Do
         let α: Double = alpha!  
         //alpT(Temp: Temp!, alpha: alpha!)  
         let c: Double = 1/(1+(α*α))
-        let D: Double = (α/ℏ.value)*computeThermalCoef(Temp: Temp!, thermostat: ther)
+        let n: Double = g*μ_B.value
+        let D: Double = γ.value*(α/n)*computeThermalCoef(Temp: Temp!, thermostat: ther)
+        //(α/ℏ.value)*computeThermalCoef(Temp: Temp!, thermostat: ther)
         //(alpL(Temp: Temp!, alpha: alpha!)/ℏ.value)*computeThermalCoef(Temp: Temp!, thermostat: ther) 
         let spin: Vector3 = moments.spin
         let Σ: Matrix3 = moments.sigma

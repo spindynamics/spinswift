@@ -73,7 +73,7 @@ class SimulationProgram : Codable {
         var sl1: [Atom] = []
         var sl2: [Atom] = []
 
-        for i in I.h.atoms {
+       for i in I.h.atoms {
 
                 if (i.type == 1) {sl1.append(i)}
 
@@ -95,28 +95,27 @@ class SimulationProgram : Codable {
             content1 += String(χ.xx)+"\t"+String(χ.yy)+"\t"+String(χ.zz)+"\t"
             content1 += String(χ.xy)+"\t"+String(χ.yz)+"\t"+String(χ.zx)+"\n"
 
-            content2 += String(T)+"\t"+String(mnorm1)+"\t"+String(mnorm2)+"\t"+String(mnorm)+"\t"
+            content2 += String(T)+"\t"+String(sl1[1].g*mnorm1)+"\t"+String(sl2[1].g*mnorm2)+"\t"+String(mnorm)+"\t"
             content2 += String(m1.z)+"\t"+String(m2.z)+"\t"+String(m.z)+"\n"
             T+=dT
         } 
         //k_B.value*
         SaveOnFile(data:content1, fileName: "Output_CurieTemp_MvsTfile_Gd_tst")
-        SaveOnFile(data:content2, fileName: "Output_CurieTemp_MvsTfile_FeGd")
+        SaveOnFile(data:content2, fileName: "Output_CurieTemp_MvsTfile_FeGd333")
     }
 
     //Laser Pulse programe
 
    private func opticalPulse(IP: Inputs) {
-        let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 0.61*44.0, Duration: 60E-15, Delay: 5e-12)
-        let Cp = LaserExcitation.TTM.HeatCapacity(Electron:6E3, Phonon:8e6)
-        let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 10e17)
-        let ttm = LaserExcitation.TTM(EffectiveThickness:40E-9, InitialTemperature: 83, Damping: 100E-12, HeatCapacity: Cp, Coupling: G)
+        let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 32.5, Duration: 60E-15, Delay: 5e-12)
+        let Cp = LaserExcitation.TTM.HeatCapacity(Electron:7E3, Phonon:3e6)
+        let G = LaserExcitation.TTM.Coupling(ElectronPhonon: 60e17)
+        let ttm = LaserExcitation.TTM(EffectiveThickness:15E-9, InitialTemperature: 82, Damping: 5E-12, HeatCapacity: Cp, Coupling: G)
         let laser = LaserExcitation(temperatures: .init(Electron:ttm.InitialTemperature, Phonon:ttm.InitialTemperature, Spin:ttm.InitialTemperature), pulse:pulse,ttm:ttm)
         var content: String = String()
         let Δt : Double = IP.time_step
         var sl1: [Atom] = []
         var sl2: [Atom] = []
-        var alp: Double = IP.α
 
         for i in I.h.atoms {
 
@@ -131,10 +130,7 @@ class SimulationProgram : Codable {
             laser.AdvanceTemperaturesGaussian(method:"euler",Δt: Δt*1E-12)
             laser.CurrentTime += Δt*1E-12
             for a in I.h.atoms {
-                
-                if (a.type == 2) {alp=0.05}
-
-                a.advanceMoments(method: "rk4", Δt: Δt, T: laser.temperatures.Electron, α: alp, thermostat: IP.thermostat)
+                a.advanceMoments(method: "rk4", Δt: Δt, T: laser.temperatures.Electron, α: IP.α, thermostat: IP.thermostat)
             } 
 
             //laser.temperatures.Electron
@@ -157,7 +153,7 @@ class SimulationProgram : Codable {
 
             self.I.h.Update() 
         }
-        SaveOnFile(data:content, fileName: "AOS_FeGd")
+        SaveOnFile(data:content, fileName: "AOS_FeGd_25pct")
 
     }
 

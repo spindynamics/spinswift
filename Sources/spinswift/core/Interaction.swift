@@ -97,16 +97,19 @@ class Interaction : Codable {
         self.isDemagnetizing = Interaction.Demagnetizing(computed: true, n: [nx,ny,nz])
         return self
     }
-
+/*
     func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
         let NumberOfAtoms: Int = atoms.count
         //var nn: Int = 0
         for i: Int in 0...NumberOfAtoms-1 where atoms[i].type == typeI {
            for j: Int in 0...i where atoms[j].type == typeJ && ComputeDistance(BCs: BCs,atom1: atoms[i],atom2: atoms[j])<=Rcut && ComputeDistance(BCs: BCs,atom1: atoms[i],atom2: atoms[j]) != 0 {
-            //if (i == 0 || j == 0) {nn+=1}      
-            atoms[i].ω += value*atoms[j].moments.spin
+            //if (i == 0 || j == 0) {nn+=1}  
+            let F1: Double = atoms[i].g*μ_B.value
+            let F2: Double = atoms[j].g*μ_B.value
+            let R: Double = γ.value*value     
+            atoms[i].ω += (R/F1)*atoms[j].moments.spin
             //(atoms[j].moments.spin - (atoms[j].moments.sigma - (atoms[j].moments.spin ⊗ atoms[j].moments.spin))*Vector3(1,1,1))   
-            atoms[j].ω += value*atoms[i].moments.spin
+            atoms[j].ω += (R/F2)*atoms[i].moments.spin
             //(atoms[i].moments.spin - (atoms[i].moments.sigma - (atoms[i].moments.spin ⊗ atoms[i].moments.spin))*Vector3(1,1,1))
             //pow(atoms[j].moments.spin.Norm(),100000)
            }
@@ -117,11 +120,35 @@ class Interaction : Codable {
         self.isExchange = Interaction.Exchange(computed: true, typeI: typeI, typeJ: typeJ, value: value, Rcut: Rcut, BCs: BCs)
         return self
     }
+    */
+    
+func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
+    let NumberOfAtoms = atoms.count
+
+    for i in 0..<NumberOfAtoms where atoms[i].type == typeI {
+        for j in 0..<NumberOfAtoms where atoms[j].type == typeJ && i != j {
+            let distance = ComputeDistance(BCs: BCs, atom1: atoms[i], atom2: atoms[j])
+            if distance <= Rcut {
+                let F1 = atoms[i].g * μ_B.value
+                let F2 = atoms[j].g * μ_B.value
+                let R = γ.value * value
+
+                atoms[i].ω += (R / F1) * atoms[j].moments.spin
+                atoms[j].ω += (R / F2) * atoms[i].moments.spin
+            }
+        }
+    }
+
+    self.isExchange = Interaction.Exchange(computed: true, typeI: typeI, typeJ: typeJ, value: value, Rcut: Rcut, BCs: BCs)
+    return self
+}
+
 
     func UniaxialField(_ axis: Vector3, value: Double) -> Interaction {
-        let coeff = value/(ℏ.value)
+        let coeff = γ.value*value
+        //(ℏ.value)
         atoms.forEach {
-            $0.ω += coeff*($0.moments.spin°axis)*axis
+            $0.ω += (coeff/$0.g*μ_B.value)*($0.moments.spin°axis)*axis
         }
         self.isUniaxial = Interaction.Uniaxial(computed: true, axis: axis, value: value)
         return self

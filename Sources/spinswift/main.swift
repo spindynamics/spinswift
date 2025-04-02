@@ -100,7 +100,7 @@ let mm = Atom.Moments(spin:Vector3(1,0.0,0.0),sigma: Matrix3(1,0,0,0,0,0,0,0,0))
 //let sg: Matrix3 = sp ⊗ sp
 //let mm = Atom.Moments(spin: sp, sigma: sg)
 let initials = InitialParam(name:"Ni", type: 1, moments: mm, g: 2.02, ℇ: D_0)
-let inisimulation = SimulationProgram.Inputs(T_initial: 0, T_step: 50, T_final: 800, time_step: 1e-2, stop: 100, α: 0.1, thermostat: "quantum")
+let inisimulation = SimulationProgram.Inputs(T_initial: 0, T_step: 50, T_final: 1800, time_step: 1e-2, stop: 10, α: 0.1, thermostat: "classical")
 var Ni: [Atom] = [Atom(),Atom(),Atom(),Atom()]
 Ni[0].position = Vector3(0.0, 0.0, 0.0)
 Ni[1].position = Vector3(0.0, 0.5, 0.5)
@@ -281,7 +281,7 @@ p.simulate(Program: "curie_temperature", IP: inisimulation)
 //Gadolinum Paramertes
 let TcGd: Double = 292.5 //experimental
 let a1: Double = 0.363
-let J_GdGd: Double = 0.79*7.88
+let J_GdGd: Double = 0.79*7.8
 let D_01: Double = J_GdGd*a1*a1
 let V_01: Double = a1*a1*a1
 let Dcut1: Double = D_01*pow(1-(292.499/TcGd),0.33333333333)
@@ -299,38 +299,69 @@ let b2: Double = 2.85e-3     // Van Hove singularity fit
 
 //Intelattice coupling 
 
-let J_FeGd: Double = -6.8
+let J_FeGd: Double = -13.27
 
+//let J_eff:Double = J_FeFe + JFeGdFe*(x/(1-x)) 
+
+let psi: Double = 5*(180/3.14)
+let mz: Double = cos(psi)
+let my: Double = sin(psi)
+let syy: Double = my*my
+let szz: Double = mz*mz
+let szy: Double = 1*mz*my 
 //Define parameters 
+//let mm = Atom.Moments(spin:Vector3(0.0,my,1*mz),sigma: Matrix3(0,0,0,0,syy,szy,0,szy,szz))
+//let mm2 = Atom.Moments(spin:Vector3(0.0,-1*my,-1*mz),sigma: Matrix3(0,0,0,0,syy,szy,0,szy,szz))
+
 let mm = Atom.Moments(spin:Vector3(0.0,0.0,1),sigma: Matrix3(0,0,0,0,0,0,0,0,1))
 let mm2 = Atom.Moments(spin:Vector3(0.0,0.0,-1),sigma: Matrix3(0,0,0,0,0,0,0,0,1))
-let initials1 = InitialParam(name:"Fe", type: 1, moments: mm, g: 2.02, ℇ: D_02, Vat: V_02, Dref: Dcut2, vanHove: b2)
-let initials2 = InitialParam(name:"Gd", type: 2, moments: mm2, g: 2.02, ℇ: D_01, Vat: V_01, Dref: Dcut1, vanHove: b1)
-let inisimulation = SimulationProgram.Inputs(T_initial: 0, T_step: 25, T_final: 500, time_step: 1e-3, stop: 20, α: 0.03, thermostat: "quantum")
+
+let initials1 = InitialParam(name:"Fe", type: 1, moments: mm, g: 1.61, ℇ: D_02, Vat: V_02, Dref: Dcut2, vanHove: b2)
+let initials2 = InitialParam(name:"Gd", type: 2, moments: mm2, g: 7.34, ℇ: D_01, Vat: V_01, Dref: Dcut1, vanHove: b1)
+let inisimulation = SimulationProgram.Inputs(T_initial: 0, T_step: 50, T_final: 1100, time_step: 1e-3, stop: 20, α: 0.1, thermostat: "classical")
+
 var Fe: [Atom] = [Atom(),Atom(),Atom(),Atom()]
 Fe[0].position = Vector3(0.0, 0.0, 0.0)
 Fe[1].position = Vector3(0.0, 0.5, 0.5)
 Fe[2].position = Vector3(0.5, 0.0, 0.5)
 Fe[3].position = Vector3(0.5, 0.5, 0.0) 
+
+//var Gd: Atom = Atom(name:"Gd", type: 2, position: Vector3(0.0, 0.0, 0.0), moments: mm2, g: 7.34, ℇ: D_01, Vat: V_01, Dref: Dcut1, vanHove: b1)
+//var Fe1: Atom = Atom(name:"Fe", type: 1, position: Vector3(0.0, 0.5, 0.5), moments: mm, g: 1.61, ℇ: D_02, Vat: V_02, Dref: Dcut2, vanHove: b2)
+//var Fe2: Atom = Atom(name:"Fe", type: 1, position: Vector3(0.5, 0.0, 0.5), moments: mm, g: 1.61, ℇ: D_02, Vat: V_02, Dref: Dcut2, vanHove: b2)
+//var Fe3: Atom = Atom(name:"Fe", type: 1, position: Vector3(0.5, 0.5, 0.0), moments: mm, g: 1.61, ℇ: D_02, Vat: V_02, Dref: Dcut2, vanHove: b2)
+
+
+//var data = String()
 //Define the unit cell atoms (positions in the unit cell). 
-let unitCellAtoms: [Atom] = Fe 
+let unitCellAtoms: [Atom] = Fe
+//[Gd,Fe1,Fe2,Fe3] 
 // Define the supercell dimensions. 
 let supercellDimensions = (x: 3, y: 3, z: 3) 
 // Generate the crystal structure. 
-let crystalStructure = GenerateCrystalStructure(UCAtoms: unitCellAtoms, supercell: supercellDimensions, LatticeConstant: 0.363, InitParam: initials1) 
+let crystalStructure = GenerateCrystalStructure(UCAtoms: unitCellAtoms, supercell: supercellDimensions, LatticeConstant: 0.35, InitParam: initials1) 
 //Define boundary conditions 
-let Boundaries = BoundaryConditions(BoxSize: 0.363*Vector3(3,3,3) ,PBC: "on")
+let Boundaries = BoundaryConditions(BoxSize: 0.35*Vector3(3,3,3) ,PBC: "on")
 //Alloy
 let Alloy = substituteRandomAtoms(structure: crystalStructure, InitParam: initials2, Percentage: 50) 
+//substituteSpecificAtoms(structure: crystalStructure, InitParam: initials2, unitCellAtoms: unitCellAtoms, supercellSize: supercellDimensions)
+
+//substituteRandomAtoms(structure: crystalStructure, InitParam: initials2, Percentage: 50) 
+
+/*for atom in Alloy {data+=String(atom.name)+" "+String(atom.type)+" "+String(atom.position.x/0.35)+" "+String(atom.position.y/0.35)+" "+String(atom.position.z/0.35)+" "+String(atom.name)+"\n"
+print(try! atom.jsonify())}
+SaveOnFile(data: data, fileName: "struct_NiFcc")
+exit(-1)*/
+
 
 //for i in 0..<Alloy.count {print(String(Alloy[i].type))}
 
-var h: Interaction = Interaction(Alloy)
-//.ExchangeField(typeI:1,typeJ:1,value:J_FeFe/ℏ.value,Rcut:0.257,BCs:Boundaries)
-//.ExchangeField(typeI:2,typeJ:2,value:J_GdGd/ℏ.value,Rcut:0.257,BCs:Boundaries)
-.ExchangeField(typeI:1,typeJ:2,value:J_FeGd/ℏ.value,Rcut:0.257,BCs:Boundaries)
-//.UniaxialField(Vector3(direction:"+z"), value: 0.050369)
-.ZeemanField(Vector3(direction:"+z"), value: -1.5)
+var h: Interaction = Interaction(Alloy )
+.ExchangeField(typeI:1,typeJ:1,value:J_FeFe,Rcut:0.257,BCs:Boundaries)
+.ExchangeField(typeI:2,typeJ:2,value:J_GdGd,Rcut:0.257,BCs:Boundaries)
+.ExchangeField(typeI:1,typeJ:2,value:J_FeGd,Rcut:0.257,BCs:Boundaries)
+.UniaxialField(Vector3(direction:"+x"), value: 0.050369)
+//.ZeemanField(Vector3(direction:"+z"), value: 0.5)
 
 //print(try! h.jsonify())
 
