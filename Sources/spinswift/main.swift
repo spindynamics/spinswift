@@ -17,19 +17,24 @@ atoms.forEach {
 
 // device syntax
 
-var MTJ:Stack = Stack()
-MTJ.append(Magnetization(name: "Fe", type: 1, position: Vector3(0,0,0), spin: Vector3(direction:"+x"), g:2))
-MTJ.append(Magnetization(name: "O", type: 2, position: Vector3(0,0,1), spin: Vector3(0,0,0), g:0))
-MTJ.append(Magnetization(name: "Fe", type: 1, position: Vector3(0,0,2), spin: Vector3(direction:"+x"), g:2))
+var MTJ: Stack = Stack()
+MTJ.append(
+    Magnetization(
+        name: "Fe", type: 1, position: Vector3(0, 0, 0), spin: Vector3(direction: "+x"), g: 2))
+MTJ.append(
+    Magnetization(name: "O", type: 2, position: Vector3(0, 0, 1), spin: Vector3(0, 0, 0), g: 0))
+MTJ.append(
+    Magnetization(
+        name: "Fe", type: 1, position: Vector3(0, 0, 2), spin: Vector3(direction: "+x"), g: 2))
 
-var h: Interaction = Interaction([MTJ[0],MTJ[2]])
-.ZeemanField(Vector3(direction:"+z"), value: 0.1)
-.UniaxialField(Vector3(direction:"+x"), value: 0.0)
-//.ExchangeField(typeI:1,typeJ:1,value:1.0,Rcut:3)
-.Dampening(0.1)
+var h: Interaction = Interaction([MTJ[0], MTJ[2]])
+    .zeemanField(Vector3(direction: "+z"), value: 0.1)
+    .uniaxialField(Vector3(direction: "+x"), value: 0.0)
+    //.ExchangeField(typeI:1,typeJ:1,value:1.0,Rcut:3)
+    .dampening(0.1)
 
 //print(try! h.jsonify())
 let s: Integrate = Integrate(h)
-s.expLs(method:"euler",Δt:0.1)
+s.expLs(method: "euler", Δt: 0.1)
 //print(try! h.atoms[0].jsonify())
-print(Analysis(h.atoms).GetTemperature())
+print(Analysis(h.atoms).getTemperature())
