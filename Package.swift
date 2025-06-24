@@ -10,7 +10,7 @@ let package: Package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         // .package(url: "https://github.com/apple/swift-docc-plugin", branch: "main"),
-        // .package(url: "https://github.com/apple/swift-format", from: "508.0.1"),
+        .package(url: "https://github.com/apple/swift-format", from: "508.0.1"),
         // .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
         .package(url:"https://github.com/apple/swift-cmark", branch:"gfm"),
     ],

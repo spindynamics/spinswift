@@ -7,10 +7,14 @@ import Foundation
 ///  
 /// - Author: Pascal Thibaudeau
 /// - Date: 14/04/2023
+/// - Update Mouad Fattouhi
+/// - Date: 30/09/2025
 /// - Version: 0.1
 
 // a very small number
 public let ε: Double = 1e-18
+// PI mathematical constant
+public let π: Double = 3.14
 
 public struct PhysicalConstants : Codable {
   public let value : Double

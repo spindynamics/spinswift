@@ -8,6 +8,8 @@ import Foundation
 /// Interactions act between atoms. 
 /// - Author: Pascal Thibaudeau
 /// - Date: 14/04/2023
+/// - Update author: Mouad Fattouhi
+/// - Updated: 01/09/2024
 /// - Version: 0.1
 class Interaction : Codable {
     
@@ -18,11 +20,24 @@ class Interaction : Codable {
         var axis: Vector3 = Vector3()
         var value: Double = Double()
     }
+
+    private struct STT_Damping : Codable {
+        /// true or false if the damping is computed
+        var computed: Bool = false
+        var Pol: Vector3 = Vector3()
+        var Amplitde: Double = Double()
+    }
+
     private struct Exchange : Codable {
         /// true or false if the exchange is computed
         var computed: Bool = false
-        var J: Double = Double()
-        var n: [Int] = [Int]()
+        //var J: Double = Double()
+        //var n: [Int] = [Int]()
+        var typeI: Int = Int()
+        var typeJ: Int = Int()
+        var value: Double = Double()
+        var Rcut: Double = Double()
+        var BCs: BoundaryConditions = BoundaryConditions()
     }
     private struct DMI : Codable {
         /// true or false if the DMI is computed
@@ -49,6 +64,7 @@ class Interaction : Codable {
     }
 
     private var isZeeman : Zeeman = Zeeman()
+    private var isSTT_Damping : STT_Damping = STT_Damping()
     private var isExchange : Exchange = Exchange()
     private var isDMI : DMI = DMI()
     private var isDamping : Damping = Damping()
@@ -65,37 +81,74 @@ class Interaction : Codable {
     func Dampening(_ value: Double) -> Interaction {
         let coeff: Double = 1.0/(1.0+value*value)
         atoms.forEach {
-            $0.ω += (value*($0.spin × $0.ω))
+            $0.ω += (value*($0.moments.spin × $0.ω))
             $0.ω = coeff * ($0.ω)
         }
         self.isDamping = Interaction.Damping(computed:true,α:value)
         return self
     }
 
+
     func DemagnetizingField(_ nx: Double, _ ny: Double , _ nz: Double) -> Interaction {
         assert(nx+ny+nz == 1,"Demagnetizing: the sum of the coefficients should be 1")
         atoms.forEach {
-            $0.ω -= Vector3(nx*($0.spin.x), ny*($0.spin.y), nz*($0.spin.z))
+            $0.ω -= Vector3(nx*($0.moments.spin.x), ny*($0.moments.spin.y), nz*($0.moments.spin.z))
         }
         self.isDemagnetizing = Interaction.Demagnetizing(computed: true, n: [nx,ny,nz])
         return self
     }
-
-    func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double? = Double()) -> Interaction {
+/*
+    func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
         let NumberOfAtoms: Int = atoms.count
+        //var nn: Int = 0
         for i: Int in 0...NumberOfAtoms-1 where atoms[i].type == typeI {
-           for j: Int in 0...i where atoms[j].type == typeJ && Distance(atoms[i].position, atoms[j].position)<=Rcut! && Distance(atoms[i].position, atoms[j].position)>0 {
-            atoms[i].ω += value*atoms[j].spin
-            atoms[j].ω = atoms[i].ω
+           for j: Int in 0...i where atoms[j].type == typeJ && ComputeDistance(BCs: BCs,atom1: atoms[i],atom2: atoms[j])<=Rcut && ComputeDistance(BCs: BCs,atom1: atoms[i],atom2: atoms[j]) != 0 {
+            //if (i == 0 || j == 0) {nn+=1}  
+            let F1: Double = atoms[i].g*μ_B.value
+            let F2: Double = atoms[j].g*μ_B.value
+            let R: Double = γ.value*value     
+            atoms[i].ω += (R/F1)*atoms[j].moments.spin
+            //(atoms[j].moments.spin - (atoms[j].moments.sigma - (atoms[j].moments.spin ⊗ atoms[j].moments.spin))*Vector3(1,1,1))   
+            atoms[j].ω += (R/F2)*atoms[i].moments.spin
+            //(atoms[i].moments.spin - (atoms[i].moments.sigma - (atoms[i].moments.spin ⊗ atoms[i].moments.spin))*Vector3(1,1,1))
+            //pow(atoms[j].moments.spin.Norm(),100000)
            }
+           //print("i="+String(i)+"====================================")
+           //atoms[2].ω.Print()
         }
+        //print(String(nn))
+        self.isExchange = Interaction.Exchange(computed: true, typeI: typeI, typeJ: typeJ, value: value, Rcut: Rcut, BCs: BCs)
         return self
     }
+    */
+    
+func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
+    let NumberOfAtoms = atoms.count
+
+    for i in 0..<NumberOfAtoms where atoms[i].type == typeI {
+        for j in 0..<NumberOfAtoms where atoms[j].type == typeJ && i != j {
+            let distance = ComputeDistance(BCs: BCs, atom1: atoms[i], atom2: atoms[j])
+            if distance <= Rcut {
+                let F1 = atoms[i].g * μ_B.value
+                let F2 = atoms[j].g * μ_B.value
+                let R = γ.value * value
+
+                atoms[i].ω += (R / F1) * atoms[j].moments.spin
+                atoms[j].ω += (R / F2) * atoms[i].moments.spin
+            }
+        }
+    }
+
+    self.isExchange = Interaction.Exchange(computed: true, typeI: typeI, typeJ: typeJ, value: value, Rcut: Rcut, BCs: BCs)
+    return self
+}
+
 
     func UniaxialField(_ axis: Vector3, value: Double) -> Interaction {
-        let coeff = value/(ℏ.value)
+        let coeff = γ.value*value
+        //(ℏ.value)
         atoms.forEach {
-            $0.ω += coeff*($0.spin°axis)*axis
+            $0.ω += (coeff/$0.g*μ_B.value)*($0.moments.spin°axis)*axis
         }
         self.isUniaxial = Interaction.Uniaxial(computed: true, axis: axis, value: value)
         return self
@@ -103,10 +156,19 @@ class Interaction : Codable {
     
     func ZeemanField(_ axis: Vector3, value: Double) -> Interaction {
         let coeff = (γ.value)*value
+        ///(ℏ.value)
         atoms.forEach {
             $0.ω += coeff*axis
         }
         self.isZeeman = Interaction.Zeeman(computed: true, axis: axis, value: value)
+        return self
+    }
+
+    func STT_DampingLike(Pol: Vector3, Amplitde: Double) -> Interaction {
+        atoms.forEach {
+            $0.ω += (Amplitde*(Pol × $0.moments.spin))
+        }
+        self.isSTT_Damping = Interaction.STT_Damping(computed:true, Pol: Pol, Amplitde: Amplitde)
         return self
     }
 
@@ -115,6 +177,8 @@ class Interaction : Codable {
         atoms.forEach {$0.ω = Vector3(0,0,0)}
         //If the fields have been computed, then update them with the proper set of values
         if (isZeeman.computed) {self.ZeemanField(isZeeman.axis,value:isZeeman.value)}
+        if (isSTT_Damping.computed) {self.STT_DampingLike(Pol:isSTT_Damping.Pol,Amplitde:isSTT_Damping.Amplitde)}
+        if (isExchange.computed) {self.ExchangeField(typeI: isExchange.typeI, typeJ: isExchange.typeJ, value: isExchange.value, Rcut: isExchange.Rcut, BCs: isExchange.BCs)}
         if (isUniaxial.computed) {self.UniaxialField(isUniaxial.axis,value:isUniaxial.value)}
         if (isDamping.computed) {self.Dampening(isDamping.α)}
     }
