@@ -12,6 +12,7 @@ import Foundation
 infix operator ×
 infix operator °
 infix operator ^ 
+infix operator ⊗
 
 public class Vector3 : Codable {
   var x,y,z: Double
@@ -104,6 +105,21 @@ public class Vector3 : Codable {
     return (a.x == b.x) && (a.y == b.y) && (a.z == b.z)
   }
 
+  /// Compute the outer product between two vector3 
+  public static func ⊗ (a: Vector3, b: Vector3) -> Matrix3 {
+    let c1: Double = (a.x) * (b.x) 
+    let c2: Double = (a.x) * (b.y) 
+    let c3: Double = (a.x) * (b.z)
+    let c4: Double = (a.y) * (b.x) 
+    let c5: Double = (a.y) * (b.y) 
+    let c6: Double = (a.y) * (b.z) 
+    let c7: Double = (a.z) * (b.x) 
+    let c8: Double = (a.z) * (b.y)
+    let c9: Double = (a.z) * (b.z)
+
+    return Matrix3(xx: c1, xy: c2, xz: c3, yx: c4, yy: c5, yz: c6, zx: c7, zy: c8, zz: c9)
+  }
+
   /// A function to print data in a json format
   public func jsonify() throws -> String {
         let data: Data = try JSONEncoder().encode(self)
@@ -142,6 +158,7 @@ public class Matrix3 : Codable {
        switch fill?.lowercased() {
           case "zeros"?: self.xx = 0 ; self.xy = 0 ; self.xz = 0 ; self.yx = 0 ; self.yy = 0 ; self.yz = 0 ; self.zx = 0 ; self.zy = 0 ; self.zz = 0
           case "ones"?: self.xx = 1 ; self.xy = 1 ; self.xz = 1 ; self.yx = 1 ; self.yy = 1 ; self.yz = 1 ; self.zx = 1 ; self.zy = 1 ; self.zz = 1
+          case "test"?: self.xx = 3 ; self.xy = 4 ; self.xz = 5 ; self.yx = 3 ; self.yy = 1 ; self.yz = 6 ; self.zx = 9 ; self.zy = 0 ; self.zz = 0
           case "identity"?: self.xx = 1 ; self.xy = 0 ; self.xz = 0 ; self.yx = 0 ; self.yy = 1 ; self.yz = 0 ; self.zx = 0 ; self.zy = 0 ; self.zz = 1
           case "antisym"?: self.xx = 0 ; self.xy = 1 ; self.xz = 1 ; self.yx = -1 ; self.yy = 0 ; self.yz = 1 ; self.zx = -1 ; self.zy = -1 ; self.zz = 0
           case "random"?:
@@ -180,56 +197,71 @@ public class Matrix3 : Codable {
     return xx*(yy*zz-yz*zy)-xy*(yx*zz-yz*zx)+xz*(yx*zy-yy*zx)
   }
 
+  // Return the diagonal matrix of 3x3 Matrix
+  func Diag() -> Matrix3 {
+    return Matrix3(xx: self.xx, xy: 0, xz: 0, yx: 0, yy: self.yy, yz: 0, zx: 0, zy: 0, zz: self.zz)
+  }
+
   // compute the transpose of a 3x3 Matrix
   func Transpose() -> Matrix3 {
-    var c1,c2,c3,c4,c5,c6,c7,c8,c9: Double
-    c1=xx
-    c2=yx
-    c3=zx
-    c4=xy
-    c5=yy
-    c6=zy
-    c7=xz
-    c8=yz
-    c9=zz
+    let c1: Double = xx
+    let c2: Double = yx
+    let c3: Double = zx
+    let c4: Double = xy
+    let c5: Double = yy
+    let c6: Double = zy
+    let c7: Double = xz
+    let c8: Double = yz
+    let c9: Double = zz
 
     return Matrix3(xx: c1, xy: c2, xz: c3, yx: c4, yy: c5, yz: c6, zx: c7, zy: c8, zz: c9)
   }
 
   // compute the cofactor for a 3x3 Matrix 
   func Cofactor() -> Matrix3 {
-    var c1,c2,c3,c4,c5,c6,c7,c8,c9: Double
-    c1 = (yy*zz) - (yz*zy)
-    c2 = (yz*zx) - (yx*zz)
-    c3 = (yx*zy) - (yy*zx)
-    c4 = (xz*zy) - (xy*zz)
-    c5 = (xx*zz) - (xz*zx)
-    c6 = (xy*zx) - (xx*zy)
-    c7 = (xy*yz) - (xz*yy)
-    c8 = (xz*yx) - (xx*yz)
-    c9 = (xx*yy) - (xy*yx)
+    let c1: Double = (yy*zz) - (yz*zy)
+    let c2: Double = (yz*zx) - (yx*zz)
+    let c3: Double = (yx*zy) - (yy*zx)
+    let c4: Double = (xz*zy) - (xy*zz)
+    let c5: Double = (xx*zz) - (xz*zx)
+    let c6: Double = (xy*zx) - (xx*zy)
+    let c7: Double = (xy*yz) - (xz*yy)
+    let c8: Double = (xz*yx) - (xx*yz)
+    let c9: Double = (xx*yy) - (xy*yx)
 
     return Matrix3(xx: c1, xy: c2, xz: c3, yx: c4, yy: c5, yz: c6, zx: c7, zy: c8, zz: c9)
   }
 
   // compute the adjunct for a 3x3 Matrix
-  func Adjoint() -> Matrix3{
-   let Cof: Matrix3 = self.Cofactor()
-
-   return Cof.Transpose()  
+  func Adjoint() -> Matrix3 {
+   return self.Cofactor().Transpose()  
   }
 
   // compute the inverse for a 3x3 Matrix
-  func Inverse() -> Matrix3{
-   let Adj: Matrix3 = self.Adjoint()
-   let Deta: Double = self.Det()
-   if (Deta == 0) {print(GeneralSettings.WriteCol.red+"This is a singular Matrix: No invese is found"+GeneralSettings.WriteCol.reset)
-   return  Matrix3(fill:"zeros")}
-   else {return  (1/Deta)*Adj} 
+  func Inverse() -> Matrix3 {
+   guard self.Det() != 0 else {print("Matrix is not invertible!"); exit(-1)} 
+   return (1/self.Det())*self.Adjoint()
   }
 
   func Print() {
-    print("[\(self.xx),\(self.xy),\(self.xz) \n\(self.yx),\(self.yy),\(self.yz) \n\(self.zx),\(self.zy),\(self.zz)]")
+    var s:String = "["
+    s.append(String(format:"%5.2f ",self.xx))
+    s.append(String(format:"%5.2f ",self.xy))
+    s.append(String(format:"%5.2f",self.xz))
+    s.append("]")
+    s.append("\n")
+    s.append("[")
+    s.append(String(format:"%5.2f ",self.yx))
+    s.append(String(format:"%5.2f ",self.yy))
+    s.append(String(format:"%5.2f",self.yz))
+    s.append("]")
+    s.append("\n")
+    s.append("[")
+    s.append(String(format:"%5.2f ",self.zx))
+    s.append(String(format:"%5.2f ",self.zy))
+    s.append(String(format:"%5.2f",self.zz))
+    s.append("]")
+    print(s)
   }
 
   public static func + (a: Matrix3, b: Matrix3) -> Matrix3 {
@@ -254,32 +286,39 @@ public class Matrix3 : Codable {
 
   /// Compute the product of two Matrices
   public static func * (a: Matrix3, b: Matrix3) -> Matrix3 {
-    var c1,c2,c3,c4,c5,c6,c7,c8,c9: Double
-    c1 = ((a.xx) * (b.xx)) + ((a.xy) * (b.yx)) + ((a.xz) * (b.zx))
-    c2 = ((a.xx) * (b.xy)) + ((a.xy) * (b.yy)) + ((a.xz) * (b.zy))
-    c3 = ((a.xx) * (b.xz)) + ((a.xy) * (b.yz)) + ((a.xz) * (b.zz))
-    c4 = ((a.yx) * (b.xx)) + ((a.yy) * (b.yx)) + ((a.yz) * (b.zx))
-    c5 = ((a.yx) * (b.xy)) + ((a.yy) * (b.yy)) + ((a.yz) * (b.zy))
-    c6 = ((a.yx) * (b.xz)) + ((a.yy) * (b.yz)) + ((a.yz) * (b.zz))
-    c7 = ((a.zx) * (b.xx)) + ((a.zy) * (b.yx)) + ((a.zz) * (b.zx))
-    c8 = ((a.zx) * (b.xy)) + ((a.zy) * (b.yy)) + ((a.zz) * (b.zy))
-    c9 = ((a.zx) * (b.xz)) + ((a.zy) * (b.yz)) + ((a.zz) * (b.zz))
+    let c1: Double = ((a.xx) * (b.xx)) + ((a.xy) * (b.yx)) + ((a.xz) * (b.zx))
+    let c2: Double = ((a.xx) * (b.xy)) + ((a.xy) * (b.yy)) + ((a.xz) * (b.zy))
+    let c3: Double = ((a.xx) * (b.xz)) + ((a.xy) * (b.yz)) + ((a.xz) * (b.zz))
+    let c4: Double = ((a.yx) * (b.xx)) + ((a.yy) * (b.yx)) + ((a.yz) * (b.zx))
+    let c5: Double = ((a.yx) * (b.xy)) + ((a.yy) * (b.yy)) + ((a.yz) * (b.zy))
+    let c6: Double = ((a.yx) * (b.xz)) + ((a.yy) * (b.yz)) + ((a.yz) * (b.zz))
+    let c7: Double = ((a.zx) * (b.xx)) + ((a.zy) * (b.yx)) + ((a.zz) * (b.zx))
+    let c8: Double = ((a.zx) * (b.xy)) + ((a.zy) * (b.yy)) + ((a.zz) * (b.zy))
+    let c9: Double = ((a.zx) * (b.xz)) + ((a.zy) * (b.yz)) + ((a.zz) * (b.zz))
    
     return Matrix3(xx: c1, xy: c2, xz: c3, yx: c4, yy: c5, yz: c6, zx: c7, zy: c8, zz: c9)
   }
 
+  /// Compute the product of a Vector3 and Matrix3
+  public static func * (a: Matrix3, b: Vector3) -> Vector3 {
+    let c1: Double = ((a.xx) * (b.x)) + ((a.xy) * (b.y)) + ((a.xz) * (b.z))
+    let c2: Double = ((a.yx) * (b.x)) + ((a.yy) * (b.y)) + ((a.yz) * (b.z))
+    let c3: Double = ((a.zx) * (b.x)) + ((a.zy) * (b.y)) + ((a.zz) * (b.z))
+    
+    return Vector3(x: c1, y: c2, z: c3)
+  }
+
   /// Compute the cross product between a Matrix 3x3 and a vector 3x1
-  public static func × (a: Matrix3, b: Vector3) -> Matrix3 {
-    var c1,c2,c3,c4,c5,c6,c7,c8,c9: Double
-    c1 = ((a.zx) * (b.y)) - ((a.yx) * (b.z))
-    c2 = ((a.zy) * (b.y)) - ((a.yy) * (b.z))
-    c3 = ((a.zz) * (b.y)) - ((a.yz) * (b.z))
-    c4 = ((a.xx) * (b.z)) - ((a.zx) * (b.x)) 
-    c5 = ((a.xy) * (b.z)) - ((a.zy) * (b.x)) 
-    c6 = ((a.xz) * (b.z)) - ((a.zz) * (b.x)) 
-    c7 = ((a.yx) * (b.x)) - ((a.xx) * (b.y)) 
-    c8 = ((a.yy) * (b.x)) - ((a.yx) * (b.y))
-    c9 = ((a.yz) * (b.x)) - ((a.xz) * (b.y))
+  public static func × (b: Vector3, a: Matrix3) -> Matrix3 {
+    let c1: Double = ((a.zx) * (b.y)) - ((a.yx) * (b.z))
+    let c2: Double = ((a.zy) * (b.y)) - ((a.yy) * (b.z))
+    let c3: Double = ((a.zz) * (b.y)) - ((a.yz) * (b.z))
+    let c4: Double = ((a.xx) * (b.z)) - ((a.zx) * (b.x)) 
+    let c5: Double = ((a.xy) * (b.z)) - ((a.zy) * (b.x)) 
+    let c6: Double = ((a.xz) * (b.z)) - ((a.zz) * (b.x)) 
+    let c7: Double = ((a.yx) * (b.x)) - ((a.xx) * (b.y)) 
+    let c8: Double = ((a.yy) * (b.x)) - ((a.yx) * (b.y))
+    let c9: Double = ((a.yz) * (b.x)) - ((a.xz) * (b.y))
 
     return Matrix3(xx: c1, xy: c2, xz: c3, yx: c4, yy: c5, yz: c6, zx: c7, zy: c8, zz: c9)
   }
@@ -312,5 +351,3 @@ public class Matrix3 : Codable {
         return jsonString!
     } 
 }
-
-

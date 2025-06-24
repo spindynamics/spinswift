@@ -11,6 +11,8 @@ import Foundation
 
 // a very small number
 public let ε: Double = 1e-18
+// PI mathematical constant
+public let π: Double = 3.14
 
 public struct PhysicalConstants : Codable {
   public let value : Double

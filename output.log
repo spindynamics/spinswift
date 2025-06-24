@@ -1,0 +1,26 @@
+[0/1] Planning build
+Building for debugging...
+[0/3] Write sources
+[1/3] Write swift-version--3E27FE4169C07DBC.txt
+[3/5] Compiling spinswift SimulationProgram.swift
+/home/mf279086/work/spinswift/Sources/spinswift/core/SimulationProgram.swift:140:17: warning: immutable value 'mnorm' was never used; consider replacing with '_' or removing it
+            let mnorm : Double = Analysis(I.h.atoms).GetMagnetizationLength()
+                ^~~~~
+                _
+/home/mf279086/work/spinswift/Sources/spinswift/core/SimulationProgram.swift:141:17: warning: immutable value 'mnorm1' was never used; consider replacing with '_' or removing it
+            let mnorm1 : Double = Analysis(sl1).GetMagnetizationLength()
+                ^~~~~~
+                _
+/home/mf279086/work/spinswift/Sources/spinswift/core/SimulationProgram.swift:142:17: warning: immutable value 'mnorm2' was never used; consider replacing with '_' or removing it
+            let mnorm2 : Double = Analysis(sl2).GetMagnetizationLength()
+                ^~~~~~
+                _
+/home/mf279086/work/spinswift/Sources/spinswift/core/SimulationProgram.swift:166:90: warning: immutable value 'T_final' was never used; consider replacing with '_' or removing it
+        let stop: Double = Initialize.stop; let Δt : Double = Initialize.time_step; let T_final: Double = Initialize.T_final
+/home/mf279086/work/spinswift/Sources/spinswift/core/SimulationProgram.swift:167:13: warning: immutable value 'dT' was never used; consider replacing with '_' or removing it
+        let dT: Double = Initialize.T_step; let α: Double = Initialize.α; let thermostat: String = Initialize.thermostat 
+[4/5] Emitting module spinswift
+[5/7] Write Objects.LinkFileList
+[6/7] Linking spinswift
+Build complete! (4.52s)
+Simulation saved in /home/mf279086/Documents/AOS_FeGd_25pct.dat
