@@ -12,6 +12,8 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: install gsl
+        run: brew install gsl
       - uses: actions/checkout@v4
       - name: Build
         run: swift build
