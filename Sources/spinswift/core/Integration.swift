@@ -2,9 +2,10 @@
 This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 */
 import Foundation
+
 /// A class for integrating the dynamics of spins
-/// 
-/// The purpose of this class is to integrate a collection of particles. 
+///
+/// The purpose of this class is to integrate a collection of particles.
 /// - Author: Pascal Thibaudeau
 /// - Date: 03/10/2023
 /// - Update author: Mouad Fattouhi
@@ -13,7 +14,7 @@ import Foundation
 
 class Integrate: Codable {
 
-    var h:Interaction
+    var h: Interaction
 
     init(_ h: Interaction = Interaction()) {
         self.h = h
@@ -35,9 +36,6 @@ class Integrate: Codable {
          while (currentTime < stop) {
             content += String(currentTime)+" "
             for a in h.atoms {
-                //content += " "+String(a.spin.x)+" "+String(a.spin.y)+" "+String(a.spin.z)
-                //content += " "+String(a.Σ.xx)//+" "+String(a.Σ.yy)+" "+String(a.Σ.zz)
-                //content += " "+String(a.Σ.xy)+" "+String(a.Σ.yz)+" "+String(a.Σ.zy)
                 a.advanceMoments(method: "euler", Δt: Δt)
             }
             let m : Vector3 = Analysis(h.atoms).GetMagnetization()
@@ -80,8 +78,13 @@ class Integrate: Codable {
 
     func jsonify() throws -> String {
         let data: Data = try JSONEncoder().encode(self)
-        let jsonString: String? = String(data:data, encoding:.utf8) 
-        return jsonString!
-    } 
+        if let jsonString = String(data: data, encoding: .utf8) {
+            return jsonString
+        } else {
+            throw NSError(
+                domain: "jsonifyError", code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+        }
+    }
 
 }

@@ -1,3 +1,4 @@
+import CGSL
 /*
 This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 */
@@ -19,7 +20,6 @@ print(String(D_0))
 
 //Initialze dLLB moments
 let mm = Atom.Moments(spin:Vector3(1,0.0,0.0),sigma: Matrix3(1,0,0,0,0,0,0,0,0))
-
 
 //Initialze Atom
 let initials = InitialParam(name:"Ni", type: 1, moments: mm, g: 2.02, ℇ: D_0)
@@ -57,6 +57,4 @@ let sol: Integrate = Integrate(h)
 //Simulation programe for which the integration will be done
 var p = SimulationProgram(sol)
 p.simulate(Program: "curie_temperature", IP: inisimulation)
-/*******************************************************************************/
-
 

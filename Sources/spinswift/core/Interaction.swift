@@ -4,18 +4,18 @@ This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 Inte
 import Foundation
 
 /// A class for managing interactions between the atoms
-/// 
-/// Interactions act between atoms. 
+///
+/// Interactions act between atoms.
 /// - Author: Pascal Thibaudeau
 /// - Date: 14/04/2023
 /// - Update author: Mouad Fattouhi
 /// - Updated: 01/09/2024
 /// - Version: 0.1
-class Interaction : Codable {
-    
+class Interaction: Codable {
+
     public var atoms: [Atom]
 
-    private struct Zeeman : Codable {
+    private struct Zeeman: Codable {
         var computed: Bool = false
         var axis: Vector3 = Vector3()
         var value: Double = Double()
@@ -39,29 +39,30 @@ class Interaction : Codable {
         var Rcut: Double = Double()
         var BCs: BoundaryConditions = BoundaryConditions()
     }
-    private struct DMI : Codable {
+    private struct DMI: Codable {
         /// true or false if the DMI is computed
         var computed: Bool = false
         var D: Double = Double()
         var n: [Int] = [Int]()
     }
-    private struct Damping : Codable {
+    private struct Damping: Codable {
         /// true or false if the damping is computed
         var computed: Bool = false
         var α: Double = Double()
     }
-    private struct Uniaxial : Codable {
+    private struct Uniaxial: Codable {
         /// true or false if the uniaxial anisotropy field is computed
         var computed: Bool = false
         var axis: Vector3 = Vector3()
         var value: Double = Double()
     }
-    private struct Demagnetizing : Codable {
+    private struct Demagnetizing: Codable {
         /// true or false if the uniform demagnetizing field is computed
         var computed: Bool = false
         /// 3 values such as n[1]+n[2]+n[3]=1
-        var n:[Double] = [Double]()
+        var n: [Double] = [Double]()
     }
+
 
     private var isZeeman : Zeeman = Zeeman()
     private var isSTT_Damping : STT_Damping = STT_Damping()
@@ -74,55 +75,31 @@ class Interaction : Codable {
     init(_ atoms: [Atom] = [Atom]()) {
         self.atoms = atoms
         atoms.forEach {
-            $0.ω = Vector3(0,0,0)
+            $0.ω = Vector3(0, 0, 0)
         }
     }
 
-    func Dampening(_ value: Double) -> Interaction {
-        let coeff: Double = 1.0/(1.0+value*value)
+    func dampening(_ value: Double) -> Interaction {
+        let coeff: Double = 1.0 / (1.0 + value * value)
         atoms.forEach {
             $0.ω += (value*($0.moments.spin × $0.ω))
             $0.ω = coeff * ($0.ω)
         }
-        self.isDamping = Interaction.Damping(computed:true,α:value)
+        self.isDamping = Interaction.Damping(computed: true, α: value)
         return self
     }
 
-
-    func DemagnetizingField(_ nx: Double, _ ny: Double , _ nz: Double) -> Interaction {
-        assert(nx+ny+nz == 1,"Demagnetizing: the sum of the coefficients should be 1")
+    func demagnetizingField(_ nx: Double, _ ny: Double, _ nz: Double) -> Interaction {
+        assert(nx + ny + nz == 1, "Demagnetizing: the sum of the coefficients should be 1")
         atoms.forEach {
-            $0.ω -= Vector3(nx*($0.moments.spin.x), ny*($0.moments.spin.y), nz*($0.moments.spin.z))
+            $0.ω -= Vector3(nx * ($0.moments.spin.x), ny * ($0.moments.spin.y), nz * ($0.moments.spin.z))
+
         }
-        self.isDemagnetizing = Interaction.Demagnetizing(computed: true, n: [nx,ny,nz])
+        self.isDemagnetizing = Interaction.Demagnetizing(computed: true, n: [nx, ny, nz])
         return self
     }
-/*
-    func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
-        let NumberOfAtoms: Int = atoms.count
-        //var nn: Int = 0
-        for i: Int in 0...NumberOfAtoms-1 where atoms[i].type == typeI {
-           for j: Int in 0...i where atoms[j].type == typeJ && ComputeDistance(BCs: BCs,atom1: atoms[i],atom2: atoms[j])<=Rcut && ComputeDistance(BCs: BCs,atom1: atoms[i],atom2: atoms[j]) != 0 {
-            //if (i == 0 || j == 0) {nn+=1}  
-            let F1: Double = atoms[i].g*μ_B.value
-            let F2: Double = atoms[j].g*μ_B.value
-            let R: Double = γ.value*value     
-            atoms[i].ω += (R/F1)*atoms[j].moments.spin
-            //(atoms[j].moments.spin - (atoms[j].moments.sigma - (atoms[j].moments.spin ⊗ atoms[j].moments.spin))*Vector3(1,1,1))   
-            atoms[j].ω += (R/F2)*atoms[i].moments.spin
-            //(atoms[i].moments.spin - (atoms[i].moments.sigma - (atoms[i].moments.spin ⊗ atoms[i].moments.spin))*Vector3(1,1,1))
-            //pow(atoms[j].moments.spin.Norm(),100000)
-           }
-           //print("i="+String(i)+"====================================")
-           //atoms[2].ω.Print()
-        }
-        //print(String(nn))
-        self.isExchange = Interaction.Exchange(computed: true, typeI: typeI, typeJ: typeJ, value: value, Rcut: Rcut, BCs: BCs)
-        return self
-    }
-    */
     
-func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
+func exchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: BoundaryConditions) -> Interaction {
     let NumberOfAtoms = atoms.count
 
     for i in 0..<NumberOfAtoms where atoms[i].type == typeI {
@@ -144,7 +121,7 @@ func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: Bou
 }
 
 
-    func UniaxialField(_ axis: Vector3, value: Double) -> Interaction {
+    func uniaxialField(_ axis: Vector3, value: Double) -> Interaction {
         let coeff = γ.value*value
         //(ℏ.value)
         atoms.forEach {
@@ -153,12 +130,13 @@ func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: Bou
         self.isUniaxial = Interaction.Uniaxial(computed: true, axis: axis, value: value)
         return self
     }
+
     
-    func ZeemanField(_ axis: Vector3, value: Double) -> Interaction {
+    func zeemanField(_ axis: Vector3, value: Double) -> Interaction {
         let coeff = (γ.value)*value
         ///(ℏ.value)
         atoms.forEach {
-            $0.ω += coeff*axis
+            $0.ω += coeff * axis
         }
         self.isZeeman = Interaction.Zeeman(computed: true, axis: axis, value: value)
         return self
@@ -172,23 +150,25 @@ func ExchangeField(typeI: Int, typeJ: Int, value: Double, Rcut: Double, BCs: Bou
         return self
     }
 
-    func Update() {
+    func update() {
         //erase the effective fields first
-        atoms.forEach {$0.ω = Vector3(0,0,0)}
+        atoms.forEach { $0.ω = .zero }
         //If the fields have been computed, then update them with the proper set of values
-        if (isZeeman.computed) {self.ZeemanField(isZeeman.axis,value:isZeeman.value)}
+        if (isZeeman.computed) {self.zeemanField(isZeeman.axis,value:isZeeman.value)}
         if (isSTT_Damping.computed) {self.STT_DampingLike(Pol:isSTT_Damping.Pol,Amplitde:isSTT_Damping.Amplitde)}
-        if (isExchange.computed) {self.ExchangeField(typeI: isExchange.typeI, typeJ: isExchange.typeJ, value: isExchange.value, Rcut: isExchange.Rcut, BCs: isExchange.BCs)}
-        if (isUniaxial.computed) {self.UniaxialField(isUniaxial.axis,value:isUniaxial.value)}
-        if (isDamping.computed) {self.Dampening(isDamping.α)}
-    }
-
-    func Update(i:Int) {  
+        if (isExchange.computed) {self.exchangeField(typeI: isExchange.typeI, typeJ: isExchange.typeJ, value: isExchange.value, Rcut: isExchange.Rcut, BCs: isExchange.BCs)}
+        if (isUniaxial.computed) {self.uniaxialField(isUniaxial.axis,value:isUniaxial.value)}
+        if (isDamping.computed) {self.dampening(isDamping.α)}
     }
 
     func jsonify() throws -> String {
         let data: Data = try JSONEncoder().encode(self)
-        let jsonString: String? = String(data:data, encoding:.utf8) 
-        return jsonString!
-    } 
+        if let jsonString = String(data: data, encoding: .utf8) {
+            return jsonString
+        } else {
+            throw NSError(
+                domain: "jsonifyError", code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"])
+        }
+    }
 }

@@ -1,7 +1,6 @@
 /*
 This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 */
-import Foundation
 
 typealias Magnetization = Atom
 
@@ -34,7 +33,7 @@ struct InitialParam: Codable {
         }
 }
 
-//Strucutre to define boudary conditions
+// Strucutre to define boundary conditions
 struct BoundaryConditions: Codable {
     var BoxSize: Vector3
     var PBC: String
@@ -45,7 +44,7 @@ struct BoundaryConditions: Codable {
     }
 }
 
-//Generate the crystalstrucutres (modifie l'initialisation)
+// Generate the crystal structures (change the initialization step)
 func GenerateCrystalStructure(UCAtoms: [Atom], supercell: (x: Int, y: Int, z: Int), LatticeConstant: Double, InitParam: InitialParam) -> [Atom] { 
     var crystalStructure: [Atom] = []
     let a=LatticeConstant 

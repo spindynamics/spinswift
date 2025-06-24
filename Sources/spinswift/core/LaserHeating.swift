@@ -103,12 +103,12 @@ class LaserExcitation : Codable {
                 let σ = self.pulse.Duration
                 let δ = self.pulse.Delay
                 let ζ = self.ttm.EffectiveThickness
-                //power = (0.5*Φ/(σ*ζ))*exp(-((time-δ)*(time-δ))/(2*σ*σ))
                 power = (Φ/(σ*ζ))*exp(-((time-δ)*(time-δ))/(0.36*σ*σ))
             default: break
         }
         return power
     }
+
 
     private func computeCp(Temp: Double) -> Double {
         let TD: Double =  475
@@ -175,12 +175,8 @@ class LaserExcitation : Codable {
         let gep: Double = g*(1/(Te+alp))
         let fx: Double = exp(x)-1
         let Ce: Double = 3*N_os*Kb*pow(x,2)*(exp(x)/pow(fx,2)) + b*Te + γ
-        //γ*tanh(Te/5000)
-        //Te
         let Cp: Double = Cp0
-        //*computeCp(Temp: Ti)
-        //*pow(Ti/TD,3)
-
+        
         print("Gep"+String(gep))
         print("Ce"+String(Ce))
         print("Cp"+String(Cp))
@@ -233,7 +229,7 @@ class LaserExcitation : Codable {
                 let k4: Temperatures = LHS(time:self.CurrentTime+Δt,temperatures:self.temperatures+Δt*k3)
                 self.temperatures += (Δt/6)*(k1+2*k2+2*k3+k4)
             default: break
-            }   
+            }
     }
 
     func jsonify() throws -> String {
