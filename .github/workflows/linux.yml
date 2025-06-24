@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install gsl
+        run: sudo apt install -y libgsl-dev
       - uses: actions/checkout@v4
       - name: Build
         run: swift build
