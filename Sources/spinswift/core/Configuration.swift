@@ -56,9 +56,6 @@ func GenerateCrystalStructure(UCAtoms: [Atom], supercell: (x: Int, y: Int, z: In
                 for atom in UCAtoms { 
                     let newPosition = a*(atom.position + translationVector) 
                     let newAtom = Atom(position: newPosition)
-                    //let sp: Vector3 = Vector3(direction: "random")
-                    //let sg: Matrix3 = sp ⊗ sp
-                    //let mm = Atom.Moments(spin: sp, sigma: sg)
             
                     newAtom.name = InitParam.name; newAtom.type=InitParam.type; 
                     newAtom.moments=InitParam.moments; newAtom.g=InitParam.g; newAtom.ℇ=InitParam.ℇ
@@ -90,33 +87,6 @@ func substituteRandomAtoms(structure: [Atom], InitParam: InitialParam, Percentag
 
 }
 
-/*
-func substituteRandomAtoms(structure: [Atom], InitParam: InitialParam, Percentage: Double) -> [Atom] {
-    // Create a deep copy of the original structure
-    var Alloy = structure
-    
-    // Calculate number of atoms to substitute
-    let Atomstosubstitute = Int(round((Percentage / 100) * Double(Alloy.count)))
-
-    // Randomly shuffle indices and take the required number
-    let RandomAtoms = (0..<Alloy.count-1).shuffled().prefix(Atomstosubstitute)
-
-    // Perform substitution
-    for atomeindex in RandomAtoms {
-        let atom = Alloy[atomeindex] // Get reference to the copied atom
-        atom.name = InitParam.name
-        atom.type = InitParam.type
-        atom.moments = InitParam.moments
-        atom.g = InitParam.g
-        atom.ℇ = InitParam.ℇ
-        atom.Vat = InitParam.Vat
-        atom.Dref = InitParam.Dref
-        atom.vanHove = InitParam.vanHove
-    }
-
-    return Alloy
-}
-*/
 
 func substituteSpecificAtoms(structure: [Atom], InitParam: InitialParam, unitCellAtoms: [Atom], supercellSize: (Int, Int, Int)) -> [Atom] {
     // Create a deep copy of the original structure

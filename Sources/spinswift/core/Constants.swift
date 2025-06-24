@@ -7,6 +7,8 @@ import Foundation
 ///  
 /// - Author: Pascal Thibaudeau
 /// - Date: 14/04/2023
+/// - Update Mouad Fattouhi
+/// - Date: 30/09/2025
 /// - Version: 0.1
 
 // a very small number
