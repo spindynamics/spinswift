@@ -7,8 +7,8 @@ The interoperability with python is performed by using the astral-uv package man
 First be sure to synchronize the requested python modules by running the following command:
 
 ```bash
-source .venv/bin/activate
 uv sync
+source .venv/bin/activate
 ```
 
 ## Building and Running
@@ -30,7 +30,6 @@ To run the simulation programs that use the library, use the following command:
 ```bash
 source .venv/bin/activate
 cd Examples/CurieTemperatureNi
-swift build
 swift run
 ```
 

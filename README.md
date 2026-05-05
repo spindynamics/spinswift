@@ -12,11 +12,15 @@ cd Docker && podman build -t swift-user . && podman run -it --rm --name swift-us
 swift build
 ```
 
-* Run the tests (assuming `uv` is installed with latest 3.11 python managed library)
+* Set up the python environment
 ```bash
-source .venv/bin/activate
 uv sync
-PYTHON_VERSION=3.11 PYTHON_LIBRARY=~/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/libpython3.11.so swift test
+source .venv/bin/activate
+```
+
+* Run the tests
+```bash
+PYTHON_LOADER_LOGGING=TRUE PYTHON_VERSION=$(cat .python-version) swift test
 ```
 
 * Build the documentation
@@ -29,8 +33,10 @@ swift package generate-documentation
 swift package --disable-sandbox preview-documentation --target spinswift
 ```
 
-* Run the main programs
+* Run the programs found in the Examples folder 
 ```swift
+source .venv/bin/activate
 cd Examples
-swift run
+swift run SimpleTest
+swift run sLLG
 ```
