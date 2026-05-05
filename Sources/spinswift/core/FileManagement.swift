@@ -35,7 +35,7 @@ internal class FileStreamer {
 
     // Create the file if it doesn't exist
     if !FileManager.default.fileExists(atPath: url.path) {
-      FileManager.default.createFile(atPath: url.path, contents: nil)
+      _ = FileManager.default.createFile(atPath: url.path, contents: nil)
     }
 
     self.fileHandle = try FileHandle(forWritingTo: url)
