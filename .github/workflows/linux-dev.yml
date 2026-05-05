@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
-        run: apt install -y libgsl-dev uv
+        run: sudo apt install -y libgsl-dev uv
       - uses: actions/checkout@v5
       - name: Build
         run: swift build
