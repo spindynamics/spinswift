@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: install dependencies
-        run: brew install gsl uv pyenv
+        run: brew install gsl uv pyenv pyenv-virtualenv
       - uses: actions/checkout@v5
       - uses: SwiftyLab/setup-swift@latest
       - name: Build
