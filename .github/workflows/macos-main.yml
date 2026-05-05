@@ -1,4 +1,4 @@
-name: SwiftOnMac
+name: SwiftOnMac-main
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: install gsl
         run: brew install gsl
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build
         run: swift build
       - name: Run tests

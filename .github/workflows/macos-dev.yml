@@ -1,0 +1,21 @@
+name: SwiftOnMac-dev
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+      - name: install dependencies
+        run: brew install gsl uv
+      - uses: actions/checkout@v5
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: uv sync && source .venv/bin/activate && swift test

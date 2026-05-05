@@ -24,7 +24,7 @@ jobs:
       #
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Use Podman Build and Push Action
         uses: Frozen-Tapestry/container-action@v1
         with:

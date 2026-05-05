@@ -1,0 +1,17 @@
+name: SwiftOnLinux-main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt install -y libgsl-dev
+      - uses: actions/checkout@v5
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test
