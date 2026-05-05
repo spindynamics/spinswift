@@ -1,0 +1,69 @@
+import CGSL
+/*
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+*/
+import Foundation
+import Spinswift
+
+/****** Simulate Nickel bulk FCC *******/
+
+let a: Double = 0.35
+let Jexp: Double = 17.2
+let J_ij: Double = 0.79 * Jexp
+let D_0: Double = 0.79 * Jexp * a * a
+//21.9611
+//J_ij*a*a
+let V_0: Double = a * a * a
+let Em: Double = (D_0) * pow(((6 * π * π) / V_0), 2 / 3)
+print(String(D_0))
+
+//Define parameters
+
+//Initialize dLLB moments
+let mm: Atom.Moments = Atom.Moments(
+    spin: Vector3(1, 0.0, 0.0), sigma: Matrix3(1, 0, 0, 0, 0, 0, 0, 0, 0))
+
+//Initialize Atom
+let initials: InitialParameters = InitialParameters(
+    name: "Ni", type: 1, moments: mm, g: 2.02)
+
+// Initialize the thermostat
+let thermostat: Thermostat = Thermostat(type: "quantum2", Tc: 635)
+
+//Initialize simulation program
+let inisimulation: SimulationProgram.Inputs = SimulationProgram.Inputs(
+    T_initial: 0, T_step: 50, T_final: 1800, time_step: 1e-2, stop: 10, α: 0.1,
+    thermostat: thermostat)
+
+//Initialize Crystal from atom
+var Ni: [Atom] = [Atom(), Atom(), Atom(), Atom()]
+Ni[0].position = Vector3(0.0, 0.0, 0.0)
+Ni[1].position = Vector3(0.0, 0.5, 0.5)
+Ni[2].position = Vector3(0.5, 0.0, 0.5)
+Ni[3].position = Vector3(0.5, 0.5, 0.0)
+
+//Define the unit cell atoms (positions in the unit cell)
+let unitCellAtoms: [Atom] = Ni
+
+// Define the supercell dimensions
+let supercellDimensions: (x: Int, y: Int, z: Int) = (x: 3, y: 3, z: 3)
+
+// Generate the crystal structure
+let crystalStructure: [Atom] = GenerateCrystalStructure(
+    UCAtoms: unitCellAtoms, supercell: supercellDimensions, LatticeConstant: 0.35,
+    initialParameters: initials)
+
+//Define boundary conditions
+let Boundaries: BoundaryConditions = BoundaryConditions(BoxSize: 0.35 * Vector3(3, 3, 3), PBC: "on")
+
+//Set the desired interaction (Here only exchange is used)
+var h: Interaction = Interaction(crystalStructure)
+    .exchangeField(typeI: 1, typeJ: 1, value: J_ij / ℏ.value, cutoffRadius: 0.25, boundaryConditions: Boundaries)
+//.ZeemanField(Vector3(direction:"+z"), value: 1.5)
+
+//Integrate the dLLB equation for each atom in the crystal
+let sol: Integrate = Integrate(h)
+
+//Simulation program for which the integration is performed
+var p: SimulationProgram = SimulationProgram(sol)
+p.simulate(Program: "curie_temperature", IP: inisimulation)

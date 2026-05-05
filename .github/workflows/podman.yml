@@ -1,0 +1,40 @@
+#
+name: Create and publish a Docker image
+
+# Configures this workflow to run every time a change is pushed to the branch called `release`.
+on:
+  push:
+    branches: ['refactor']
+
+# Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+# There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+      #
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Use Podman Build and Push Action
+        uses: Frozen-Tapestry/container-action@v1
+        with:
+          login_registry: ghcr.io
+          login_username: ${{ secrets.REGISTRY_USERNAME }}
+          login_password: ${{ secrets.REGISTRY_PASSWORD }}
+          tags: ghcr.io/pthibaud/spinswift:latest
+          dockerfile: Dockerfile
+          # Use those security flags if using GitHub Action. Keep the defaults, if using Gitea.
+          security: |
+            --security-opt=seccomp=unconfined
+            --security-opt=apparmor=unconfined
+          push: true

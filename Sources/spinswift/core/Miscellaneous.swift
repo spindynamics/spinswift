@@ -1,0 +1,48 @@
+/// Pre-computed Gauss-Legendre abscissas (x) and weights (w)
+/// from https://pomax.github.io/bezierinfo/legendre-gauss.html#n32
+/// Note: The number of points is determined by gaussLegendreX.count
+private let gaussLegendreX: [Double] = [
+  -0.0483076656877383, 0.0483076656877383, -0.1444719615827965, 0.1444719615827965,
+  -0.2392873622521371, 0.2392873622521371, -0.3318686022821277, 0.3318686022821277,
+  -0.4213512761306353, 0.4213512761306353, -0.5068999089322294, 0.5068999089322294,
+  -0.5877157572407623, 0.5877157572407623, -0.6630442669302152, 0.6630442669302152,
+  -0.7321821187402897, 0.7321821187402897, -0.7944837959679424, 0.7944837959679424,
+  -0.8493676137325700, 0.8493676137325700, -0.8963211557660521, 0.8963211557660521,
+  -0.9349060759377397, 0.9349060759377397, -0.9647622555875064, 0.9647622555875064,
+  -0.9856115115452684, 0.9856115115452684, -0.9972638618494816, 0.9972638618494816,
+]
+
+private let gaussLegendreW: [Double] = [
+  0.0965400885147278, 0.0965400885147278, 0.0956387200792749, 0.0956387200792749,
+  0.0938443990808046, 0.0938443990808046, 0.0911738786957639, 0.0911738786957639,
+  0.0876520930044038, 0.0876520930044038, 0.0833119242269467, 0.0833119242269467,
+  0.0781938957870703, 0.0781938957870703, 0.0723457941088485, 0.0723457941088485,
+  0.0658222227763618, 0.0658222227763618, 0.0586840934785355, 0.0586840934785355,
+  0.0509980592623762, 0.0509980592623762, 0.0428358980222267, 0.0428358980222267,
+  0.0342738629130214, 0.0342738629130214, 0.0253920653092621, 0.0253920653092621,
+  0.0162743947309057, 0.0162743947309057, 0.0070186100094701, 0.0070186100094701,
+]
+
+/// Integrates a function using the Gauss-Legendre method
+///
+/// - Parameters:
+///   - function: The function to integrate. It should take a Double and return a Double
+///   - lowerBound: The lower bound of integration
+///   - upperBound: The upper bound of integration
+///
+/// - Returns: The approximate value of the definite integral
+func integrateGaussLegendre(
+  function: (Double) -> Double, lowerBound: Double, upperBound: Double
+) -> Double {
+  let n = gaussLegendreX.count
+  let scale: Double = (upperBound - lowerBound) / 2.0
+  let mid: Double = (upperBound + lowerBound) / 2.0
+
+  var integral: Double = 0.0
+  for i: Int in 0..<n {
+    let x_i: Double = scale * gaussLegendreX[i] + mid
+    integral += gaussLegendreW[i] * function(x_i)
+  }
+
+  return scale * integral
+}

@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:spinswift}",
+            "name": "Debug spinswift",
+            "target": "spinswift",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug spinswift"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:spinswift}",
+            "name": "Release spinswift",
+            "target": "spinswift",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release spinswift"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:spinswift}",
+            "name": "Debug CurieTemperatureNi",
+            "target": "CurieTemperatureNi",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug CurieTemperatureNi"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:spinswift}",
+            "name": "Release CurieTemperatureNi",
+            "target": "CurieTemperatureNi",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release CurieTemperatureNi"
+        }
+    ]
+}

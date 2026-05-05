@@ -1,0 +1,6 @@
+module CGSL [system] {
+    header "cgsl.h"
+    link "gsl"
+    link "gslcblas"
+    export *
+}
