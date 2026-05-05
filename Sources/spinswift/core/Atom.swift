@@ -175,23 +175,6 @@ public class Atom: Codable {
       let cosξ = cos(ξ)
       self.moments.spin =
         cosξ * self.moments.spin + sinξ * (Ω × self.moments.spin) + (χ * (1.0 - cosξ)) * Ω
-    case "llg_symplectic":
-      var s: Vector3 = Vector3()
-      let ω2: Double = ω ° ω
-      let c: Double = 0.25 * Δt * Δt
-      let c2: Double = 1.0 / (1.0 + c * ω2)
-      var s1: Vector3 = c * ((2.0 * (ω ° moments.spin)) * ω - ω2 * moments.spin)
-      s1 += Δt * (ω × moments.spin)
-      s = c2 * (moments.spin + s1)
-      self.moments.spin = s
-    case "llg_symplectic_full":
-      var s: Vector3 = Vector3()
-      let n: Double = ω.norm()
-      let Ω: Vector3 = (1.0 / n) * ω
-      let ξ: Double = n * Δt
-      let χ: Double = Ω ° (moments.spin)
-      s = cos(ξ) * (moments.spin) + sin(ξ) * (Ω × (moments.spin)) + (χ * (1.0 - cos(ξ))) * Ω
-      self.moments.spin = s
     case "dllb_euler":
       self.moments +=
         Δt * rhs(moments: self.moments, thermostat: thermostat)
