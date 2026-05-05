@@ -21,7 +21,7 @@ jobs:
       - name: Run tests
         run: |
           uv sync
-          ls -alF
+          eval "$(pyenv virtualenv-init -)"
           source .venv/bin/activate
           swift test
 
