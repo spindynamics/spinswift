@@ -9,10 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
-        run: sudo apt install -y libgsl-dev
-        run: pip install uv
+        run: |
+          sudo apt install -y libgsl-dev
+          pip install uv
       - uses: actions/checkout@v5
       - name: Build
         run: swift build
       - name: Test
-        run: uv sync && source .venv/bin/activate && swift test
+        run: |
+          uv sync
+          ls -alF
+          source .venv/bin/activate
+          swift test
