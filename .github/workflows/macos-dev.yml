@@ -15,6 +15,7 @@ jobs:
       - name: install dependencies
         run: brew install gsl uv
       - uses: actions/checkout@v5
+      - uses: SwiftyLab/setup-swift@latest
       - name: Build
         run: swift build
       - name: Run tests
