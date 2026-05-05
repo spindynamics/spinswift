@@ -21,7 +21,7 @@ jobs:
       - name: Run tests
         run: |
           uv sync
-          echo $VIRTUAL_ENV
+          uv python install 3.11
           source .venv/bin/activate
           echo $VIRTUAL_ENV
           swift test
