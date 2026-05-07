@@ -49,6 +49,7 @@ To generate and preview the documentation, use the following commands:
 swift package generate-documentation
 swift package --disable-sandbox preview-documentation --target spinswift
 ```
+When you need to search docs, use `context7` tools.
 
 ## Development Conventions
 
