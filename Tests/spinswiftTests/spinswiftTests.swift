@@ -144,24 +144,24 @@ import Testing
     #expect(abs(v.x - 0.6) < 1e-9)
 
     // Test JSON Consistency
-    let original = Vector3(1.2, 3.4, 5.6)
-    let json = try original.jsonify()
-    let decoded = try JSONDecoder().decode(Vector3.self, from: json.data(using: .utf8)!)
+    let original: Vector3 = Vector3(1.2, 3.4, 5.6)
+    let json: String = try original.jsonify()
+    let decoded: Vector3 = try JSONDecoder().decode(Vector3.self, from: json.data(using: .utf8)!)
     #expect(original == decoded)
   }
   @Test func testMatrix3Extended() throws {
     // Test Special Fills
-    let random = Matrix3(fill: "random")
+    let random: Matrix3 = Matrix3(fill: "random")
     #expect(!random.xx.isNaN)
 
-    let antisym = Matrix3(fill: "antisym")
+    let antisym: Matrix3 = Matrix3(fill: "antisym")
     #expect(antisym.xx == 0 && antisym.yy == 0 && antisym.zz == 0)
     #expect(abs(antisym.xy - (-antisym.yx)) < 1e-9)
 
     // Test Matrix-Vector Cross Product (×)
-    let v = Vector3(1, 0, 0)
-    let m = Matrix3(fill: "identity")
-    let result = v × m
+    let v: Vector3 = Vector3(1, 0, 0)
+    let m: Matrix3 = Matrix3(fill: "identity")
+    let result: Matrix3 = v × m
     // Result is what it actually produces
     #expect(result.xx == 0 && result.xy == 0 && result.xz == 0)
     #expect(result.yx == 0 && result.yy == 0 && result.yz == 1)
@@ -170,18 +170,18 @@ import Testing
   @Test func testAtomIntegrationPrecession() throws {
     // Setup: Spin in +x, Magnetic field in +z
     // Expected: Precession in the x-y plane
-    let B_val = 1.0
-    let field = Vector3(0, 0, 1)
-    let omega_val = γ.value * B_val
+    let B_val: Double = 1.0
+    let field: Vector3 = Vector3(0, 0, 1)
+    let omega_val: Double = γ.value * B_val
 
-    let dt = 0.01  // 10 fs
-    let steps = 100
-    let thermostat = Thermostat(type: "classical", T: 0.0, α: 0.0)
+    let dt: Double = 0.01  // 10 fs
+    let steps: Int = 100
+    let thermostat: Thermostat = Thermostat(type: "classical", T: 0.0, α: 0.0)
 
-    let methods = ["llg_euler", "llg_symplectic", "llg_symplectic_full"]
+    let methods: [String] = ["llg_euler", "llg_symplectic", "llg_symplectic_full"]
 
-    for method in methods {
-      let atom = Atom(
+    for method: String in methods {
+      let atom: Atom = Atom(
         name: "Fe", type: 1, position: Vector3(),
         ω: omega_val * field,
         moments: Atom.Moments(spin: Vector3(1, 0, 0)),
@@ -193,9 +193,9 @@ import Testing
       }
 
       // Analytical solution: x = cos(omega * t), y = sin(omega * t)
-      let totalTime = dt * Double(steps)
-      let expectedX = cos(omega_val * totalTime)
-      let expectedY = sin(omega_val * totalTime)
+      let totalTime: Double = dt * Double(steps)
+      let expectedX: Double = cos(omega_val * totalTime)
+      let expectedY: Double = sin(omega_val * totalTime)
 
       // Symplectic and Symplectic-form should be very accurate
       // Euler will have some drift (norm > 1), but we normalize it in-place
@@ -212,10 +212,10 @@ import Testing
     let thermostat = Thermostat(type: "classical", T: 0.0, α: 0.0)
 
     // Compare dllb_rk4 with llg_symplectic (using very small steps for ground truth)
-    let atomLLG = Atom(
+    let atomLLG: Atom = Atom(
       name: "Fe", type: 1, ω: Vector3(0, 0, γ.value), moments: .init(spin: Vector3(1, 0, 0)), g: 2.0
     )
-    let atomDLLB = Atom(
+    let atomDLLB: Atom = Atom(
       name: "Fe", type: 1, ω: Vector3(0, 0, γ.value),
       moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
 
@@ -228,7 +228,7 @@ import Testing
   @Test func testThermostat() throws {
 
     // Test Quantum 2 (Quadratic)
-    let thermostatQ2 = Thermostat(
+    let thermostatQ2: Thermostat = Thermostat(
       type: "quantum2",
       Tc: 631.0,
       magnonEnergy: 100.0,
@@ -242,7 +242,7 @@ import Testing
     // Test Quantum 4 (Quartic)
     // Ensure exchangeStiffnessTc is large enough so (4 * h * w * vanHove / exchange) < 1
     // h approx 0.658, w max approx 1. 4*0.658*1*1 = 2.632. So exchange > 2.632
-    let thermostatQ4 = Thermostat(
+    let thermostatQ4: Thermostat = Thermostat(
       type: "quantum4",
       Tc: 631.0,
       magnonEnergy: 10.0,
@@ -252,16 +252,16 @@ import Testing
       T: 300
     )
 
-    let coeffQ4 = thermostatQ4.computeThermalCoefficient()
+    let coeffQ4: Double = thermostatQ4.computeThermalCoefficient()
     #expect(!coeffQ4.isNaN)
     #expect(abs(coeffQ4 - 1.4053310106883394) < 1e-9)
 
     // Test Classical
-    let thermostatClassical = Thermostat(
+    let thermostatClassical: Thermostat = Thermostat(
       type: "classical",
       T: 300
     )
-    let coeffClassical = thermostatClassical.computeThermalCoefficient()
+    let coeffClassical: Double = thermostatClassical.computeThermalCoefficient()
     #expect(abs(coeffClassical - (k_B.value * 300.0)) < 1e-9)
   }
   @Test func testPymatgenCoreStructureLattice() throws {
@@ -270,7 +270,7 @@ import Testing
 
     let structure: PythonObject = Python.import("pymatgen.core").Structure.from_file(
       "Assets/Fe.cif")
-    let lat = structure.lattice
+    let lat: PythonObject = structure.lattice
 
     #expect(abs(lat.a - 2.8630355) < 1e-9 && abs(lat.b - lat.a) < 1e-9 && abs(lat.c - lat.a) < 1e-9)
     #expect(
@@ -522,7 +522,7 @@ import Testing
       0.47262690578647415,  // T=1500K
     ]
 
-    for (index, T) in testTemperatures.enumerated() {
+    for (index: Int, T: Double) in testTemperatures.enumerated() {
       let result: Double = laser.computeCp(T: T, TDebye: 475)
 
       // Check that the result is close to the expected value
@@ -552,36 +552,36 @@ import Testing
       ),
     ]
 
-    let analysis = Analysis(atoms)
+    let analysis: Analysis = Analysis(atoms)
 
     // Test getInstantEnergy: sum of ω · spin for each atom
     // atom0: (0,0,1)·(1,0,0) = 0
     // atom1: (0,0,2)·(0,1,0) = 0
     // atom2: (0,0,3)·(0,0,1) = 3
-    let energy = analysis.getInstantEnergy()
+    let energy: Double = analysis.getInstantEnergy()
     #expect(abs(energy - 3.0) < 1e-9)
 
     // Test getMagnetization: average of spin weighted by g
     // (2*(1,0,0) + 2*(0,1,0) + 2*(0,0,1)) / 6 = (2/6, 2/6, 2/6)
-    let mag = analysis.getMagnetization()
+    let mag: Vector3 = analysis.getMagnetization()
     #expect(abs(mag.x - 1.0 / 3.0) < 1e-9)
     #expect(abs(mag.y - 1.0 / 3.0) < 1e-9)
     #expect(abs(mag.z - 1.0 / 3.0) < 1e-9)
 
     // Test getMagnetizationLength: average |spin|
     // (|1| + |1| + |1|) / 3 = 1.0
-    let magLen = analysis.getMagnetizationLength()
+    let magLen: Double = analysis.getMagnetizationLength()
     #expect(abs(magLen - 1.0) < 1e-9)
 
     // Test getMagnetizationSummary: combined vector and length
-    let summary = analysis.getMagnetizationSummary()
+    let summary: (vector: Vector3, length: Double) = analysis.getMagnetizationSummary()
     #expect(abs(summary.vector.x - 1.0 / 3.0) < 1e-9)
     #expect(abs(summary.vector.y - 1.0 / 3.0) < 1e-9)
     #expect(abs(summary.vector.z - 1.0 / 3.0) < 1e-9)
     #expect(abs(summary.length - 1.0) < 1e-9)
 
     // Test getTorque: verify computed values
-    let torque = analysis.getTorque()
+    let torque: Vector3 = analysis.getTorque()
     #expect(!torque.x.isNaN)
     #expect(!torque.y.isNaN)
     #expect(!torque.z.isNaN)
@@ -589,12 +589,12 @@ import Testing
     #expect(torque.norm() > 0)
 
     // Test getTemperature: verify formula produces positive value for positive energy and torque
-    let temp = analysis.getTemperature()
+    let temp: Double = analysis.getTemperature()
     #expect(!temp.isNaN)
     #expect(temp > 0)
 
     // Test getSusceptibility: verify non-NaN symmetric matrix
-    let chi = analysis.getSusceptibility()
+    let chi: Matrix3 = analysis.getSusceptibility()
     #expect(!chi.xx.isNaN)
     #expect(!chi.xy.isNaN)
     // Chi should be symmetric
@@ -608,38 +608,39 @@ import Testing
   }
   @Test func testLaserExcitation() throws {
     // Test Temperatures struct operations
-    let temps = LaserExcitation.Temperatures(Electron: 100, Phonon: 50, Spin: 25)
+    let temps: LaserExcitation.Temperatures = LaserExcitation.Temperatures(Electron: 100, Phonon: 50, Spin: 25)
     #expect(temps.Electron == 100.0)
     #expect(temps.Phonon == 50.0)
     #expect(temps.Spin == 25.0)
 
     // Test addition
-    let temps2 = LaserExcitation.Temperatures(Electron: 50, Phonon: 25, Spin: 10)
-    let sum = temps + temps2
+    let temps2: LaserExcitation.Temperatures = LaserExcitation.Temperatures(Electron: 50, Phonon: 25, Spin: 10)
+    let sum: LaserExcitation.Temperatures = temps + temps2
     #expect(sum.Electron == 150.0)
     #expect(sum.Phonon == 75.0)
     #expect(sum.Spin == 35.0)
 
     // Test scalar multiplication
-    let scaled = 2.0 * temps
+    let scaled: LaserExcitation.Temperatures = 2.0 * temps
     #expect(scaled.Electron == 200.0)
     #expect(scaled.Phonon == 100.0)
     #expect(scaled.Spin == 50.0)
 
     // Test Pulse struct
-    let pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 1.0, Duration: 0.1, Delay: 0.0)
+    let pulse: LaserExcitation.Pulse = LaserExcitation.Pulse(Form: "Gaussian", Fluence: 1.0, Duration: 0.1, Delay: 0.0)
     #expect(pulse.Form == "Gaussian")
     #expect(pulse.Fluence == 1.0)
     #expect(pulse.Duration == 0.1)
     #expect(pulse.Delay == 0.0)
 
     // Test TTM and Coupling structs
-    let coupling = LaserExcitation.TTM.Coupling(ElectronPhonon: 1e16, ElectronSpin: 1e14, PhononSpin: 1e13)
+    let coupling: LaserExcitation.TTM.Coupling = LaserExcitation.TTM.Coupling(
+      ElectronPhonon: 1e16, ElectronSpin: 1e14, PhononSpin: 1e13)
     #expect(coupling.ElectronPhonon == 1e16)
     #expect(coupling.ElectronSpin == 1e14)
     #expect(coupling.PhononSpin == 1e13)
 
-    let ttm = LaserExcitation.TTM(
+    let ttm: LaserExcitation.TTM = LaserExcitation.TTM(
       EffectiveThickness: 10.0, InitialTemperature: 300.0, Damping: 1.0,
       HeatCapacity: LaserExcitation.Temperatures(Electron: 100, Phonon: 50, Spin: 25),
       Coupling: coupling
@@ -648,7 +649,7 @@ import Testing
     #expect(ttm.InitialTemperature == 300.0)
 
     // Test LaserExcitation initialization
-    let laser = LaserExcitation(
+    let laser: LaserExcitation = LaserExcitation(
       CurrentTime: 0.0,
       temperatures: LaserExcitation.Temperatures(Electron: 300, Phonon: 300, Spin: 300),
       pulse: pulse, ttm: ttm
@@ -657,17 +658,17 @@ import Testing
     #expect(laser.temperatures.Electron == 300.0)
 
     // Test ComputeInstantPower for Gaussian pulse
-    let power = laser.ComputeInstantPower(time: 0.0)  // At peak (t = delay)
+    let power: Double = laser.ComputeInstantPower(time: 0.0)  // At peak (t = delay)
     // Expected: Φ / (σ * ζ) * exp(0) = 1.0 / (0.1 * 10.0) = 1.0
     #expect(abs(power - 1.0) < 1e-9)
 
     // Test computeCp (heat capacity calculation)
-    let cp = laser.computeCp(T: 300, TDebye: 475)
+    let cp: Double = laser.computeCp(T: 300, TDebye: 475)
     #expect(!cp.isNaN)
     #expect(abs(cp - 2.1020306487883857) < 1e-9)
 
     // Test AdvanceTemperaturesGaussian with Euler method
-    let laser2 = LaserExcitation(
+    let laser2: LaserExcitation = LaserExcitation(
       CurrentTime: 0.0,
       temperatures: LaserExcitation.Temperatures(Electron: 300, Phonon: 300, Spin: 300),
       pulse: pulse, ttm: ttm
@@ -676,7 +677,7 @@ import Testing
     #expect(abs(laser2.temperatures.Electron - 300.0) < 1e3)
 
     // Test jsonify
-    let jsonString = try laser.jsonify()
+    let jsonString: String = try laser.jsonify()
     #expect(!jsonString.isEmpty)
     #expect(jsonString.contains("CurrentTime"))
     #expect(jsonString.contains("Electron"))
@@ -709,26 +710,28 @@ import Testing
     #expect(ε > 0)
 
     // Test PhysicalConstants.jsonify()
-    let json = try μ_B.jsonify()
+    let json: String = try μ_B.jsonify()
     #expect(json.contains("0.057883817555"))
     #expect(json.contains("The Bohr Magneton"))
   }
   @Test func testConfigurationHelpers() throws {
     // Test GenerateCrystalStructure
     let unitCellAtoms: [Atom] = [
-      Atom(name: "Fe", type: 1, position: Vector3(0, 0, 0),
-          moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0),
-      Atom(name: "Fe", type: 1, position: Vector3(0.5, 0.5, 0),
-          moments: .init(spin: Vector3(0, 1, 0), sigma: Matrix3(fill: "identity")), g: 2.0),
+      Atom(
+        name: "Fe", type: 1, position: Vector3(0, 0, 0),
+        moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0),
+      Atom(
+        name: "Fe", type: 1, position: Vector3(0.5, 0.5, 0),
+        moments: .init(spin: Vector3(0, 1, 0), sigma: Matrix3(fill: "identity")), g: 2.0),
     ]
 
-    let initialParams = InitialParameters(
+    let initialParams: InitialParameters = InitialParameters(
       name: "Fe", type: 1, spin: Vector3(1, 0, 0),
       moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")),
       position: Vector3(), g: 2.0
     )
 
-    let crystal = GenerateCrystalStructure(
+    let crystal: [Atom] = GenerateCrystalStructure(
       UCAtoms: unitCellAtoms, supercell: (2, 1, 1), LatticeConstant: 2.87,
       initialParameters: initialParams
     )
@@ -739,65 +742,70 @@ import Testing
     #expect(crystal[0].type == 1)
 
     // Test substituteRandomAtoms
-    let structure = GenerateCrystalStructure(
+    let structure: [Atom] = GenerateCrystalStructure(
       UCAtoms: unitCellAtoms, supercell: (4, 1, 1), LatticeConstant: 2.87,
       initialParameters: initialParams
     )
 
-    let NiParams = InitialParameters(
+    let NiParams: InitialParameters = InitialParameters(
       name: "Ni", type: 2, spin: Vector3(0, 0, 1),
       moments: .init(spin: Vector3(0, 0, 1), sigma: Matrix3(fill: "identity")),
       position: Vector3(), g: 2.0
     )
 
-    let substituted = substituteRandomAtoms(structure: structure, initialParameters: NiParams, Percentage: 25.0)
+    let substituted: [Atom] = substituteRandomAtoms(
+      structure: structure, initialParameters: NiParams, Percentage: 25.0)
     // 8 atoms * 25% = 2 atoms substituted
-    let NiCount = substituted.filter { $0.name == "Ni" }.count
+    let NiCount: Int = substituted.filter { $0.name == "Ni" }.count
     #expect(NiCount == 2)
 
     // Test BoundaryConditions
-    let bc = BoundaryConditions(BoxSize: Vector3(10, 10, 10), PBC: "on")
+    let bc: BoundaryConditions = BoundaryConditions(BoxSize: Vector3(10, 10, 10), PBC: "on")
     #expect(bc.PBC == "on")
     #expect(bc.BoxSize.x == 10.0)
 
     // Test ComputeDistance without PBC
-    let atom1 = Atom(name: "Fe", type: 1, position: Vector3(0, 0, 0),
-                     moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
-    let atom2 = Atom(name: "Fe", type: 1, position: Vector3(3, 4, 0),
-                     moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
+    let atom1: Atom = Atom(
+      name: "Fe", type: 1, position: Vector3(0, 0, 0),
+      moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
+    let atom2: Atom = Atom(
+      name: "Fe", type: 1, position: Vector3(3, 4, 0),
+      moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
 
-    let bcNoPBC = BoundaryConditions(BoxSize: Vector3(10, 10, 10), PBC: "off")
-    let dist = ComputeDistance(BCs: bcNoPBC, atom1: atom1, atom2: atom2)
+    let bcNoPBC: BoundaryConditions = BoundaryConditions(BoxSize: Vector3(10, 10, 10), PBC: "off")
+    let dist: Double = ComputeDistance(BCs: bcNoPBC, atom1: atom1, atom2: atom2)
     #expect(abs(dist - 5.0) < 1e-9)
 
     // Test ComputeDistance with PBC (minimum image convention)
-    let atom3 = Atom(name: "Fe", type: 1, position: Vector3(9, 0, 0),
-                     moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
-    let atom4 = Atom(name: "Fe", type: 1, position: Vector3(1, 0, 0),
-                     moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
-    let bcPBC = BoundaryConditions(BoxSize: Vector3(10, 10, 10), PBC: "on")
-    let distPBC = ComputeDistance(BCs: bcPBC, atom1: atom3, atom2: atom4)
+    let atom3: Atom = Atom(
+      name: "Fe", type: 1, position: Vector3(9, 0, 0),
+      moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
+    let atom4: Atom = Atom(
+      name: "Fe", type: 1, position: Vector3(1, 0, 0),
+      moments: .init(spin: Vector3(1, 0, 0), sigma: Matrix3(fill: "identity")), g: 2.0)
+    let bcPBC: BoundaryConditions = BoundaryConditions(BoxSize: Vector3(10, 10, 10), PBC: "on")
+    let distPBC: Double = ComputeDistance(BCs: bcPBC, atom1: atom3, atom2: atom4)
     // Distance with PBC: 9-1=8, but min image: 8-10=-2 → |−2|*1 = 2
     #expect(abs(distPBC - 2.0) < 1e-9)
   }
   @Test func testErrors() throws {
     // Test encoding error
-    let encodingError = SpinswiftError.encodingError("test message")
+    let encodingError: SpinswiftError = SpinswiftError.encodingError("test message")
     #expect(encodingError.description == "Encoding Error: test message")
 
     // Test JSON serialization
-    let validConstant = PhysicalConstants(value: 1.0, description: "test", units: "test")
-    let json = try validConstant.jsonify()
+    let validConstant: PhysicalConstants = PhysicalConstants(value: 1.0, description: "test", units: "test")
+    let json: String = try validConstant.jsonify()
     #expect(json.contains("value"))
     #expect(json.contains("test"))
   }
   @Test func testBoundaryValues() throws {
     // Test zero temperature
-    let thermostatZero = Thermostat(type: "classical", T: 0.0)
+    let thermostatZero: Thermostat = Thermostat(type: "classical", T: 0.0)
     #expect(thermostatZero.T == 0.0)
 
     // Test zero spin
-    let zeroSpinAtom = Atom(
+    let zeroSpinAtom: Atom = Atom(
       name: "Fe", type: 1, position: Vector3(),
       moments: .init(spin: Vector3(0, 0, 0), sigma: Matrix3(fill: "identity")),
       g: 2.0
@@ -805,11 +813,11 @@ import Testing
     #expect(zeroSpinAtom.moments.spin.norm() == 0.0)
 
     // Test negative temperature should be handled
-    let negThermostat = Thermostat(type: "classical", T: -1.0)
+    let negThermostat: Thermostat = Thermostat(type: "classical", T: -1.0)
     #expect(negThermostat.T < 0)
 
     // Test large values
-    let largeThermostat = Thermostat(type: "classical", T: 1e6)
+    let largeThermostat: Thermostat = Thermostat(type: "classical", T: 1e6)
     #expect(largeThermostat.T == 1e6)
   }
 }

@@ -18,19 +18,19 @@ class PeriodicTable {
   /*
 
       Enables *lookup* of atomic numbers/names/labels to get the atomic number.
-  
+
       Several quantities available to the atomic species are available
       from <https://en.wikipedia.org/wiki/Atomic_radii_of_the_elements_(data_page)>.
-  
+
       The following values are accessible:
-  
+
       * atomic mass (in atomic units)
       * empirical atomic radii (in Ang)
       * calculated atomic radii (in Ang)
       * van der Waals atomic radii (in Ang)
-  
+
       For certain species the above quantities are not available and a negative number is returned.
-  
+
       Examples
       --------
       >>> 79 == PeriodicTable().Z('Au')
@@ -57,7 +57,7 @@ class PeriodicTable {
       True
       >>> 1.7 == PeriodicTable().radius(6,'vdw')
       True
-  
+
   */
   /// Mapping from element names/symbols/numbers to atomic numbers.
   let Z_int: [AnyHashable: Int] = [
