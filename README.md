@@ -1,4 +1,4 @@
-For more information about the project, see the [AGENTS.md](AGENTS.md) file.
+![SpinSwift](https://mark.sylphx.com/api/v1/mark/hero.svg?text=SpinSwift\&desc=Atomistic+spin+dynamics+in+swift\&theme=light)
 
 # spinswift
 
@@ -40,3 +40,4 @@ cd Examples
 swift run SimpleTest
 swift run sLLG
 ```
+For more information about the project, see the [AGENTS.md](AGENTS.md) file.
