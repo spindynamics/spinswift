@@ -522,7 +522,7 @@ import Testing
       0.47262690578647415,  // T=1500K
     ]
 
-    for (index: Int, T: Double) in testTemperatures.enumerated() {
+    for (index, T) in testTemperatures.enumerated() {
       let result: Double = laser.computeCp(T: T, TDebye: 475)
 
       // Check that the result is close to the expected value
