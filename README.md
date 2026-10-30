@@ -99,12 +99,12 @@ swift package --disable-sandbox preview-documentation --target spinswift
 - **Sources/spinswift/core/**: Core simulation components
   - `Atom.swift`: Spin dynamics and thermal models
   - `SimulationProgram.swift`: Simulation program management
-  - `Interaction.swift*: magnetic interaction models
+  - `Interaction.swift`: magnetic interaction models
   - `Integration.swift`: Numerical integration methods
   - `Analysis.swift`: Magnetic property analysis
   - `Constants.swift`: Physical constants
-  - `Configuration.swift*: Crystal structure generation
-  - `LaserHeating.swift*: Ultrafast magnetization simulations
+  - `Configuration.swift`: Crystal structure generation
+  - `LaserHeating.swift`: Ultrafast magnetization simulations
 
 For complete documentation, see [AGENTS.md](AGENTS.md).
 
