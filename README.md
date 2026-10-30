@@ -2,7 +2,7 @@
 
 Atomistic spin dynamics simulation in Swift. Simulates magnetic properties of materials including the Curie temperature, ultrafast magnetization dynamics, and spin transport in crystalline structures.
 
-![SpinSwift](https://mark.sylphx.com/api/v1/mark/hero.svg?text=SpinSwift&desc=Atomistic+spin+dynamics+in+swift&theme=light)
+![SpinSwift](https://mark.sylphx.com/api/v1/mark/hero.svg?text=SpinSwift&desc=Atomistic+spin+dynamics+simulation+in+Swift&theme=light)
 
 ## Overview
 
